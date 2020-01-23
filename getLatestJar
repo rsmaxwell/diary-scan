@@ -1,0 +1,185 @@
+#!/bin/bash
+
+REPOSITORYURL=${1}
+if [ -z "${REPOSITORYURL}" ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "Missing REPOSITORYURL argument"
+    exit 1
+fi
+
+REPOSITORYID=${2}
+if [ -z "${REPOSITORYID}" ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "Missing REPOSITORYID argument"
+    exit 1
+fi
+
+REPOSITORY=${3}
+if [ -z "${REPOSITORY}" ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "Missing REPOSITORY argument"
+    exit 1
+fi
+
+GROUPID=${4}
+if [ -z "${GROUPID}" ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "Missing GROUPID argument"
+    exit 1
+fi
+
+ARTIFACTID=${5}
+if [ -z "${ARTIFACTID}" ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "Missing ARTIFACTID argument"
+    exit 1
+fi
+
+PACKAGING=${6}
+if [ -z "${PACKAGING}" ]; then
+    PACKAGING="jar"
+fi
+
+#*****************************************************************
+# Create the output directory
+#*****************************************************************
+currentDir=$(pwd)
+result=$?
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    exit 1
+fi
+
+mkdir -p output temp
+result=$?
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    exit 1
+fi
+
+
+flag="${currentDir}/output/version_${ARTIFACTID}.txt"
+if [ $(find ${flag} -mmin -60) ]; then
+    VERSION=$(cat ${flag})
+else
+    #*****************************************************************
+    # Find the latest version of the jar
+    #*****************************************************************
+    tempdir=$(mktemp -d --tmpdir=temp "diary-XXXXXXXXXXXX")
+    result=$?
+    if [ ! ${result} -eq 0 ]; then
+        echo "Error: $0[${LINENO}]"
+        echo "result: ${result}"
+        exit 1
+    fi
+    
+    cd ${tempdir}
+    result=$?
+    if [ ! ${result} -eq 0 ]; then
+        echo "Error: $0[${LINENO}]"
+        echo "result: ${result}"
+        exit 1
+    fi
+    
+    cat << EOT > pom.xml
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>junk</groupId>
+	<artifactId>junk</artifactId>
+	<version>junk</version>
+
+	<dependencies>
+		<dependency>
+			<groupId>${GROUPID}</groupId>
+			<artifactId>${ARTIFACTID}</artifactId>
+			<version>0.0.0</version>
+		</dependency>
+	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>${REPOSITORYID}</id>
+			<url>${REPOSITORYURL}/${REPOSITORY}/</url>
+			<releases>
+				<updatePolicy>always</updatePolicy>
+			</releases>
+		</repository>
+	</repositories>
+
+</project>
+EOT
+
+    mvn --batch-mode --log-file ${tempdir}/output.txt versions:use-latest-releases
+    result=$?
+    if [ ! ${result} -eq 0 ]; then
+        echo "Error: $0[${LINENO}]"
+        echo "result: ${result}"
+        echo "----[ pom.xml ]--------------------------"
+        cat -n pom.xml
+        echo "----[ output.txt ]--------------------------"
+        cat ${tempdir}/output.txt
+        echo "----------------------------------------"
+        exit 1
+    fi
+    
+    while [ ! -f pom.xml ]; do sleep 1; done
+    
+    line=$(grep "<version>" pom.xml | head -n 2 | tail -n 1)
+    if [ ${#line} -eq 0 ]; then
+        echo "Error: $0[${LINENO}]"
+        exit 1
+    fi
+    
+    regex="<version>(.*)</version>"
+    if [[ ! ${line} =~ ${regex} ]]; then
+        echo "Error: $0[${LINENO}]"
+        exit 1
+    fi
+    
+    VERSION="${BASH_REMATCH[1]}"
+    
+    cd ${currentdir}
+    result=$?
+    if [ ! ${result} -eq 0 ]; then
+        echo "Error: $0[${LINENO}]"
+        echo "result: ${result}"
+        exit 1
+    fi
+    
+    rm -rf ${tempdir}
+    result=$?
+    if [ ! ${result} -eq 0 ]; then
+        echo "Error: $0[${LINENO}]"
+        echo "result: ${result}"
+        exit 1
+    fi
+
+    echo ${VERSION} > ${flag}
+fi
+
+filename=${HOME}/.m2/repository/${GROUPID//.//}/${ARTIFACTID}/${VERSION}/${ARTIFACTID}-${VERSION}.${PACKAGING}
+if [ ! -f "${filename}" ]; then
+    mvn --batch-mode --log-file ${currentDir}/temp/output.txt dependency:get -DremoteRepositories=${REPOSITORYURL}/${REPOSITORY} -Dartifact=${GROUPID}:${ARTIFACTID}:${VERSION}
+    result=$?
+    if [ ! ${result} -eq 0 ]; then
+        echo "Error: $0[${LINENO}]"
+        echo "result: ${result}"
+        echo "----[ output.txt ]--------------------------"
+        cat ${currentDir}/temp/output.txt
+        echo "----------------------------------------"
+        exit 1
+    fi
+fi
+
+if [ ! -f "${filename}" ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "file not found: [${filename}]"
+    exit 1
+fi
+
+echo ${filename}

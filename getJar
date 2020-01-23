@@ -1,0 +1,51 @@
+#!/bin/bash
+
+GROUPID=${1}
+if [ -z "${GROUPID}" ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "Missing GROUPID argument"
+    exit 1
+fi
+
+ARTIFACTID=${2}
+if [ -z "${ARTIFACTID}" ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "Missing ARTIFACTID argument"
+    exit 1
+fi
+
+VERSION=${3}
+if [ -z "${VERSION}" ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "Missing VERSION argument"
+    exit 1
+fi
+
+PACKAGING=${4}
+if [ -z "${PACKAGING}" ]; then
+    PACKAGING="jar"
+fi
+
+
+
+filename=${HOME}/.m2/repository/${GROUPID//.//}/${ARTIFACTID}/${VERSION}/${ARTIFACTID}-${VERSION}.${PACKAGING}
+if [ ! -f "${filename}" ]; then
+    mvn --batch-mode --log-file ./output/output.txt dependency:get -Dartifact=${GROUPID}:${ARTIFACTID}:${VERSION}
+    result=$?
+    if [ ! ${result} -eq 0 ]; then
+        echo "Error: $0[${LINENO}]"
+        echo "result: ${result}"
+        echo "----[ output.txt ]--------------------------"
+        cat ./output/output.txt
+        echo "----------------------------------------"
+        exit 1
+    fi
+fi
+
+if [ ! -f "${filename}" ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "file not found: [${filename}]"
+    exit 1
+fi
+
+echo ${filename}

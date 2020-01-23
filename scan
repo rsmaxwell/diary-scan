@@ -1,0 +1,177 @@
+#!/bin/bash
+
+root="/media/NAS/photo/documents/sea-captains-chest"
+
+
+function generateJson {
+
+    filename=${1}
+    if [ -z "${filename}" ]; then
+        echo "Error: $0[${LINENO}]"
+        echo "missing filename argument"
+        exit 1
+    fi
+
+    if [ ! -f "${filename}" ]; then
+        echo "Error: $0[${LINENO}]"
+        echo "file not found: \"${filename}\""
+        exit 1
+    fi
+
+    java -cp ${classpath} com.rsmaxwell.extractor.App --file "${filename}" --year 1828 outputDir ./output 1>stdout.txt 2>stderr.txt
+    result=$?
+    if [ ! ${result} -eq 0 ]; then
+        echo "Error: $0[${LINENO}]"
+        echo "result: ${result}"
+        echo "----[ stdout ]--------------------------"
+        cat stdout.txt
+        echo "----[ stderr ]--------------------------"
+        cat stderr.txt
+        echo "----------------------------------------"
+        exit 1
+    fi
+}
+
+
+
+if [ ! -d "${root}" ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "root not found: [${root}]"
+    exit 1
+fi
+
+dirs=()
+dirs+=('diary 1828 and 1829 and jan 1830')
+dirs+=('diary 1830')
+dirs+=('diary 1831')
+dirs+=('diary 1832')
+dirs+=('diary 1834')
+dirs+=('diary 1835')
+dirs+=('diary 1836')
+dirs+=('diary 1837')
+dirs+=('diary 1838')
+dirs+=('diary 1839')
+
+rm -rf temp
+result=$?
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    exit 1
+fi
+
+mkdir -p output
+result=$?
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    exit 1
+fi
+
+REPOSITORYURL="https://server.rsmaxwell.co.uk/archiva/repository"
+REPOSITORYID="releases"
+REPOSITORY="releases"
+GROUPID="com.rsmaxwell.diary"
+
+ARTIFACTID="extractor"
+
+echo "find the latest version on the extractor jar"
+stdout=$(./getLatestJar "${REPOSITORYURL}" "${REPOSITORYID}" "${REPOSITORY}" "${GROUPID}" "${ARTIFACTID}")
+result=$?
+if [ ${result} -eq 0 ]; then
+    extractorJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+ARTIFACTID="diaryjson"
+
+echo "find the latest version on the diaryjson jar"
+stdout=$(./getLatestJar "${REPOSITORYURL}" "${REPOSITORYID}" "${REPOSITORY}" "${GROUPID}" "${ARTIFACTID}")
+result=$?
+if [ ${result} -eq 0 ]; then
+    diaryjsonJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+echo "get the CommonsCli Jar"
+stdout=$(./getJar "commons-cli" "commons-cli" "1.4")
+result=$?
+if [ ${result} -eq 0 ]; then
+    commonsCliJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+echo "get the JacksonDatabind Jar"
+jacksonDataBindJar=$(./getJar "com.fasterxml.jackson.core" "jackson-databind" "2.10.2")
+result=$?
+if [ ${result} -eq 0 ]; then
+    jacksonDataBindJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+echo "get the JacksonCore Jar"
+stdout=$(./getJar "com.fasterxml.jackson.core" "jackson-core" "2.10.2")
+result=$?
+if [ ${result} -eq 0 ]; then
+    jacksonCoreJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+echo "get the JacksonAnnotations Jar"
+stdout=$(./getJar "com.fasterxml.jackson.core" "jackson-annotations" "2.10.2" )
+result=$?
+if [ ${result} -eq 0 ]; then
+    jacksonAnnotationsJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+echo "generate json files from the word documents"
+export classpath="${extractorJar}:${diaryjsonJar}:${commonsCliJar}:${jacksonDataBindJar}:${jacksonCoreJar}:${jacksonAnnotationsJar}"
+export -f generateJson
+for i in "${dirs[@]}"; do
+    echo "${i}"
+
+    ( cd "${root}/${i}"
+      list=()
+      while IFS= read -rd '' files; do list+=("$files")
+      done < <(find "${root}/${i}" -name "img*.docx" -print0)
+    )
+
+    for j in "${list[@]}"; do
+        echo "    ${j}"
+        generateJson "${j}"
+        result=$?
+        if [ ! ${result} -eq 0 ]; then
+            echo "Error: $0[${LINENO}]"
+            echo "result: ${result}"
+            exit 1
+        fi
+    done
+done
+
+
+
