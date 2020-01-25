@@ -61,7 +61,7 @@ fi
 
 
 flag="${currentDir}/output/version_${ARTIFACTID}.txt"
-if [ $(find ${flag} -mmin -60) ]; then
+if [ $(find ${flag} -mmin -60 2>/dev/null) ]; then
     VERSION=$(cat ${flag})
 else
     #*****************************************************************
@@ -114,7 +114,7 @@ else
 </project>
 EOT
 
-    mvn --batch-mode --log-file ${tempdir}/output.txt versions:use-latest-releases
+    mvn --batch-mode --log-file ${tempdir}/output.txt versions:use-latest-releases 1>/dev/null 2>/dev/null
     result=$?
     if [ ! ${result} -eq 0 ]; then
         echo "Error: $0[${LINENO}]"

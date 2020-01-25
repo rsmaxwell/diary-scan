@@ -5,30 +5,47 @@ root="/media/NAS/photo/documents/sea-captains-chest"
 
 function generateJson {
 
-    filename=${1}
-    if [ -z "${filename}" ]; then
+    inputFilename=${1}
+    if [ -z "${inputFilename}" ]; then
         echo "Error: $0[${LINENO}]"
-        echo "missing filename argument"
+        echo "missing inputFilename argument"
         exit 1
     fi
 
-    if [ ! -f "${filename}" ]; then
+    year=${2}
+    if [ -z "${year}" ]; then
         echo "Error: $0[${LINENO}]"
-        echo "file not found: \"${filename}\""
+        echo "missing year argument"
         exit 1
     fi
 
-    java -cp ${classpath} com.rsmaxwell.extractor.App --file "${filename}" --year 1828 outputDir ./output 1>temp/stdout.txt 2>temp/stderr.txt
-    result=$?
-    if [ ! ${result} -eq 0 ]; then
+    if [ ! -f "${inputFilename}" ]; then
         echo "Error: $0[${LINENO}]"
-        echo "result: ${result}"
-        echo "----[ stdout ]--------------------------"
-        cat temp/stdout.txt
-        echo "----[ stderr ]--------------------------"
-        cat temp/stderr.txt
-        echo "----------------------------------------"
+        echo "file not found: \"${inputFilename}\""
         exit 1
+    fi
+
+    basename=$(basename "${inputFilename}" ".docx")
+    outputFilename="./output/${basename}.json"
+
+    if [ "${outputFilename}" -nt "${inputFilename}" ]; then
+        echo "${outputFilename} is up-to-date"
+    else
+        echo "generating ${outputFilename}"
+
+        java -cp ${classpath} com.rsmaxwell.extractor.App --inputFile "${inputFilename}" --outputFile "${outputFilename}" --year ${year} outputDir ./output 1>temp/stdout.txt 2>temp/stderr.txt
+        result=$?
+        if [ ! ${result} -eq 0 ]; then
+            echo "Error: $0[${LINENO}]"
+            echo "result: ${result}"
+            echo "${inputFilename}"
+            echo "----[ stdout ]--------------------------"
+            cat temp/stdout.txt
+            echo "----[ stderr ]--------------------------"
+            cat temp/stderr.txt
+            echo "----------------------------------------"
+            exit 1
+        fi
     fi
 }
 
@@ -75,7 +92,7 @@ GROUPID="com.rsmaxwell.diary"
 
 ARTIFACTID="extractor"
 
-echo "find the latest version on the extractor jar"
+echo "find the latest version of the extractor jar"
 stdout=$(./getLatestJar "${REPOSITORYURL}" "${REPOSITORYID}" "${REPOSITORY}" "${GROUPID}" "${ARTIFACTID}")
 result=$?
 if [ ${result} -eq 0 ]; then
@@ -89,7 +106,7 @@ fi
 
 ARTIFACTID="diaryjson"
 
-echo "find the latest version on the diaryjson jar"
+echo "find the latest version of the diaryjson jar"
 stdout=$(./getLatestJar "${REPOSITORYURL}" "${REPOSITORYID}" "${REPOSITORY}" "${GROUPID}" "${ARTIFACTID}")
 result=$?
 if [ ${result} -eq 0 ]; then
@@ -160,8 +177,22 @@ for i in "${dirs[@]}"; do
     done < <(find "${root}/${i}" -name "img*.docx" -print0)
 
     for j in "${list[@]}"; do
-        echo "    ${j}"
-        generateJson "${j}"
+        dirname1=$(dirname "${j}")
+        dirname2=$(dirname "${dirname1}")
+        script="${dirname2}/findyear"
+        basename=$(basename "${j}" ".docx")
+
+        stdout=$("${script}" "${basename}")
+        result=$?
+        if [ ! ${result} -eq 0 ]; then
+            echo "Error: $0[${LINENO}]"
+            echo "result: ${result}"
+            echo "${stdout}"
+            exit 1
+        fi
+        year=${stdout}
+
+        generateJson "${j}" "${year}"
         result=$?
         if [ ! ${result} -eq 0 ]; then
             echo "Error: $0[${LINENO}]"
