@@ -3,7 +3,7 @@
 root="/media/NAS/photo/documents/sea-captains-chest"
 
 
-function generateJson {
+function extractText {
 
     inputFilename=${1}
     if [ -z "${inputFilename}" ]; then
@@ -26,14 +26,14 @@ function generateJson {
     fi
 
     basename=$(basename "${inputFilename}" ".docx")
-    outputFilename="./output/${basename}.json"
+    pagefile="./output/pages/${basename}"
 
-    if [ "${outputFilename}" -nt "${inputFilename}" ]; then
-        echo "${outputFilename} is up-to-date"
+    if [ "${pagefile}" -nt "${inputFilename}" ]; then
+        echo "page up-to-date: ${pagefile}"
     else
-        echo "generating ${outputFilename}"
+        echo "generating page: ${pagefile}"
 
-        java -cp ${classpath} com.rsmaxwell.extractor.App --inputFile "${inputFilename}" --outputFile "${outputFilename}" --year ${year} outputDir ./output 1>temp/stdout.txt 2>temp/stderr.txt
+        java -cp ${classpath} com.rsmaxwell.extractor.App --inputFile "${inputFilename}" --year ${year} 1>temp/stdout.txt 2>temp/stderr.txt
         result=$?
         if [ ! ${result} -eq 0 ]; then
             echo "Error: $0[${LINENO}]"
@@ -103,6 +103,7 @@ else
     echo "${stdout}"
     exit 1
 fi
+echo "${extractorJar}"
 
 ARTIFACTID="diaryjson"
 
@@ -111,6 +112,21 @@ stdout=$(./getLatestJar "${REPOSITORYURL}" "${REPOSITORYID}" "${REPOSITORY}" "${
 result=$?
 if [ ${result} -eq 0 ]; then
     diaryjsonJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+echo "${diaryjsonJar}"
+
+ARTIFACTID="generator"
+
+echo "find the latest version of the generator jar"
+stdout=$(./getLatestJar "${REPOSITORYURL}" "${REPOSITORYID}" "${REPOSITORY}" "${GROUPID}" "${ARTIFACTID}")
+result=$?
+if [ ${result} -eq 0 ]; then
+    generatorJar=${stdout}
 else
     echo "Error: $0[${LINENO}]"
     echo "result: ${result}"
@@ -166,7 +182,7 @@ else
     exit 1
 fi
 
-echo "generate json files from the word documents"
+echo "extract text from the diary pages (*.docx) into day files (*.json)"
 classpath="${extractorJar}:${diaryjsonJar}:${commonsCliJar}:${jacksonDataBindJar}:${jacksonCoreJar}:${jacksonAnnotationsJar}"
 for i in "${dirs[@]}"; do
     echo "${i}"
@@ -192,7 +208,7 @@ for i in "${dirs[@]}"; do
         fi
         year=${stdout}
 
-        generateJson "${j}" "${year}"
+        extractText "${j}" "${year}"
         result=$?
         if [ ! ${result} -eq 0 ]; then
             echo "Error: $0[${LINENO}]"
@@ -202,5 +218,20 @@ for i in "${dirs[@]}"; do
     done
 done
 
+echo "generate PDF diaries from the day files (*.json)"
+classpath="${generatorJar}:${diaryjsonJar}:${commonsCliJar}:${jacksonDataBindJar}:${jacksonCoreJar}:${jacksonAnnotationsJar}"
+java -cp ${classpath} com.rsmaxwell.generator.App 1>temp/stdout.txt 2>temp/stderr.txt
+result=$?
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${inputFilename}"
+    echo "----[ stdout ]--------------------------"
+    cat temp/stdout.txt
+    echo "----[ stderr ]--------------------------"
+    cat temp/stderr.txt
+    echo "----------------------------------------"
+    exit 1
+fi
 
 
