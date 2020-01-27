@@ -51,7 +51,7 @@ if [ ! ${result} -eq 0 ]; then
     exit 1
 fi
 
-mkdir -p output temp
+mkdir -p output/version temp
 result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
@@ -60,7 +60,7 @@ if [ ! ${result} -eq 0 ]; then
 fi
 
 
-flag="${currentDir}/output/version_${ARTIFACTID}.txt"
+flag="${currentDir}/output/version/${ARTIFACTID}"
 if [ $(find ${flag} -mmin -60 2>/dev/null) ]; then
     VERSION=$(cat ${flag})
 else

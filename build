@@ -182,6 +182,20 @@ else
     exit 1
 fi
 
+echo "get the itextpdf Jar"
+stdout=$(./getJar "com.itextpdf" "html2pdf" "2.1.6" )
+result=$?
+if [ ${result} -eq 0 ]; then
+    itextpdfJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+
+
 echo "extract text from the diary pages (*.docx) into day files (*.json)"
 classpath="${extractorJar}:${diaryjsonJar}:${commonsCliJar}:${jacksonDataBindJar}:${jacksonCoreJar}:${jacksonAnnotationsJar}"
 for i in "${dirs[@]}"; do
@@ -216,11 +230,31 @@ for i in "${dirs[@]}"; do
             exit 1
         fi
     done
+
+
+    # Copy the 
+    list=()
+    while IFS= read -rd '' files; do 
+        list+=("$files")
+    done < <(find "${root}/${i}" -name "img*.json" -print0)
+
+    for j in "${list[@]}"; do
+        basename=$(basename "${j}")
+        target="output/days/${basename}"
+
+        if [ "${target}" -nt "${j}" ]; then
+            echo "up-to-date: ${target}"
+        else
+            echo "copying to: ${target}"
+            cp "${j}" "${target}"
+        fi
+    done
+
 done
 
 echo "generate PDF diaries from the day files (*.json)"
-classpath="${generatorJar}:${diaryjsonJar}:${commonsCliJar}:${jacksonDataBindJar}:${jacksonCoreJar}:${jacksonAnnotationsJar}"
-java -cp ${classpath} com.rsmaxwell.generator.App 1>temp/stdout.txt 2>temp/stderr.txt
+classpath="${generatorJar}:${diaryjsonJar}:${commonsCliJar}:${jacksonDataBindJar}:${jacksonCoreJar}:${jacksonAnnotationsJar}:${itextpdfJar}"
+java -cp ${classpath} com.rsmaxwell.generator.App --inputDir output/days --outputDir output 1>temp/stdout.txt 2>temp/stderr.txt
 result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
