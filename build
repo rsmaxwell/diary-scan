@@ -29,7 +29,7 @@ function extractText {
     pagefile="./output/pages/${basename}"
 
     if [ "${pagefile}" -nt "${inputFilename}" ]; then
-        echo "page up-to-date: ${pagefile}"
+        : # echo "page up-to-date: ${pagefile}"
     else
         echo "generating page: ${pagefile}"
 
@@ -77,14 +77,6 @@ if [ ! ${result} -eq 0 ]; then
     exit 1
 fi
 
-mkdir -p output
-result=$?
-if [ ! ${result} -eq 0 ]; then
-    echo "Error: $0[${LINENO}]"
-    echo "result: ${result}"
-    exit 1
-fi
-
 REPOSITORYURL="https://server.rsmaxwell.co.uk/archiva/repository"
 REPOSITORYID="releases"
 REPOSITORY="releases"
@@ -92,7 +84,7 @@ GROUPID="com.rsmaxwell.diary"
 
 ARTIFACTID="extractor"
 
-echo "find the latest version of the extractor jar"
+# echo "find the latest version of the extractor jar"
 stdout=$(./getLatestJar "${REPOSITORYURL}" "${REPOSITORYID}" "${REPOSITORY}" "${GROUPID}" "${ARTIFACTID}")
 result=$?
 if [ ${result} -eq 0 ]; then
@@ -103,11 +95,11 @@ else
     echo "${stdout}"
     exit 1
 fi
-echo "${extractorJar}"
+# echo "${extractorJar}"
 
 ARTIFACTID="diaryjson"
 
-echo "find the latest version of the diaryjson jar"
+# echo "find the latest version of the diaryjson jar"
 stdout=$(./getLatestJar "${REPOSITORYURL}" "${REPOSITORYID}" "${REPOSITORY}" "${GROUPID}" "${ARTIFACTID}")
 result=$?
 if [ ${result} -eq 0 ]; then
@@ -118,11 +110,11 @@ else
     echo "${stdout}"
     exit 1
 fi
-echo "${diaryjsonJar}"
+# echo "${diaryjsonJar}"
 
 ARTIFACTID="generator"
 
-echo "find the latest version of the generator jar"
+# echo "find the latest version of the generator jar"
 stdout=$(./getLatestJar "${REPOSITORYURL}" "${REPOSITORYID}" "${REPOSITORY}" "${GROUPID}" "${ARTIFACTID}")
 result=$?
 if [ ${result} -eq 0 ]; then
@@ -134,7 +126,7 @@ else
     exit 1
 fi
 
-echo "get the CommonsCli Jar"
+# echo "get the CommonsCli Jar"
 stdout=$(./getJar "commons-cli" "commons-cli" "1.4")
 result=$?
 if [ ${result} -eq 0 ]; then
@@ -146,7 +138,7 @@ else
     exit 1
 fi
 
-echo "get the JacksonDatabind Jar"
+# echo "get the JacksonDatabind Jar"
 stdout=$(./getJar "com.fasterxml.jackson.core" "jackson-databind" "2.10.2")
 result=$?
 if [ ${result} -eq 0 ]; then
@@ -158,7 +150,7 @@ else
     exit 1
 fi
 
-echo "get the JacksonCore Jar"
+# echo "get the JacksonCore Jar"
 stdout=$(./getJar "com.fasterxml.jackson.core" "jackson-core" "2.10.2")
 result=$?
 if [ ${result} -eq 0 ]; then
@@ -170,7 +162,7 @@ else
     exit 1
 fi
 
-echo "get the JacksonAnnotations Jar"
+# echo "get the JacksonAnnotations Jar"
 stdout=$(./getJar "com.fasterxml.jackson.core" "jackson-annotations" "2.10.2" )
 result=$?
 if [ ${result} -eq 0 ]; then
@@ -182,7 +174,7 @@ else
     exit 1
 fi
 
-echo "get the itextpdf Jar"
+# echo "get the itextpdf Jar"
 stdout=$(./getJar "com.itextpdf" "html2pdf" "2.1.6" )
 result=$?
 if [ ${result} -eq 0 ]; then
@@ -194,66 +186,203 @@ else
     exit 1
 fi
 
+# echo "get the itextpdf forms Jar"
+stdout=$(./getJar "com.itextpdf" "forms" "7.1.9" )
+result=$?
+if [ ${result} -eq 0 ]; then
+    itextpdfFormsJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+# echo "get the itextpdf kernel Jar"
+stdout=$(./getJar "com.itextpdf" "kernel" "7.1.9" )
+result=$?
+if [ ${result} -eq 0 ]; then
+    itextpdfKernelJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+# echo "get the itextpdf io Jar"
+stdout=$(./getJar "com.itextpdf" "io" "7.1.9" )
+result=$?
+if [ ${result} -eq 0 ]; then
+    itextpdfIOJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+# echo "get the itextpdf layout Jar"
+stdout=$(./getJar "com.itextpdf" "layout" "7.1.9" )
+result=$?
+if [ ${result} -eq 0 ]; then
+    itextpdfLayoutJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+# echo "get the itextpdf svg Jar"
+stdout=$(./getJar "com.itextpdf" "svg" "7.1.9" )
+result=$?
+if [ ${result} -eq 0 ]; then
+    itextpdfSvgJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+# echo "get the itextpdf styled-xml-parser Jar"
+stdout=$(./getJar "com.itextpdf" "styled-xml-parser" "7.1.9" )
+result=$?
+if [ ${result} -eq 0 ]; then
+    itextpdfStyledXmlParserJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+# echo "get the slf4j-api Jar"
+stdout=$(./getJar "org.slf4j" "slf4j-api" "1.7.13" )
+result=$?
+if [ ${result} -eq 0 ]; then
+    slf4jJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
 
 
-echo "extract text from the diary pages (*.docx) into day files (*.json)"
-classpath="${extractorJar}:${diaryjsonJar}:${commonsCliJar}:${jacksonDataBindJar}:${jacksonCoreJar}:${jacksonAnnotationsJar}"
+
+
+
+# extract text from the diary pages (*.docx) into day files (*.json)
+
+classpath="${extractorJar}:${diaryjsonJar}:${commonsCliJar}:${jacksonDataBindJar}:${jacksonCoreJar}:${jacksonAnnotationsJar}:${slf4jJar}"
+
 for i in "${dirs[@]}"; do
-    echo "${i}"
+    # echo "${i}"
 
-    list=()
-    while IFS= read -rd '' files; do 
-        list+=("$files")
-    done < <(find "${root}/${i}" -name "img*.docx" -print0)
+    # Extract the text from the word files (*.docx) into the day files (*.json) 
+    for file in "${root}/${i}/metadata/word"/*; do
 
-    for j in "${list[@]}"; do
-        dirname1=$(dirname "${j}")
-        dirname2=$(dirname "${dirname1}")
-        script="${dirname2}/findyear"
-        basename=$(basename "${j}" ".docx")
+        basename=$(basename "${file}")
 
-        stdout=$("${script}" "${basename}")
-        result=$?
-        if [ ! ${result} -eq 0 ]; then
-            echo "Error: $0[${LINENO}]"
-            echo "result: ${result}"
-            echo "${stdout}"
-            exit 1
+        regex="^img[0-9]{4}(-(left|right))?\.docx$"
+        if [[ "${basename}" =~ ${regex} ]]; then
+
+            stdout=$("${root}/${i}/metadata/findyear" "${basename}")
+            result=$?
+            if [ ! ${result} -eq 0 ]; then
+                echo "Error: $0[${LINENO}]"
+                echo "result: ${result}"
+                echo "${stdout}"
+                exit 1
+            fi
+            year=${stdout}
+
+ 
+            extractText "${file}" "${year}"
+            result=$?
+            if [ ! ${result} -eq 0 ]; then
+                echo "Error: $0[${LINENO}]"
+                echo "result: ${result}"
+                exit 1
+            fi
         fi
-        year=${stdout}
+    done
 
-        extractText "${j}" "${year}"
-        result=$?
-        if [ ! ${result} -eq 0 ]; then
-            echo "Error: $0[${LINENO}]"
-            echo "result: ${result}"
-            exit 1
+    # Copy the images to the html baseUrl directory
+    for file in "${root}/${i}"/*; do
+
+        basename=$(basename "${file}")
+
+        regx="^img([0-9]{4})-image-.*\.(jpg|png)$"
+        if [[ "${basename}" =~ ${regx} ]]; then
+
+            dirname=$(dirname "${file}")
+            script="${dirname}/metadata/findyear"
+            stdout=$("${script}" "${basename}")
+            result=$?
+            if [ ! ${result} -eq 0 ]; then
+                echo "Error: $0[${LINENO}]"
+                echo "result: ${result}"
+                echo "${stdout}"
+                exit 1
+            fi
+            year=${stdout}
+
+            # Create the html image directory
+            mkdir -p "output/html/${year}/images"
+            result=$?
+            if [ ! ${result} -eq 0 ]; then
+                echo "Error: $0[${LINENO}]"
+                echo "result: ${result}"
+                exit 1
+            fi
+
+            target="output/html/${year}/images/${basename}"
+            if [ "${target}" -nt "${file}" ]; then
+                : # echo "up-to-date: ${target}"
+            else
+                echo "copying to: ${target}"
+                cp "${file}" "${target}"
+            fi
         fi
     done
 
 
-    # Copy the 
-    list=()
-    while IFS= read -rd '' files; do 
-        list+=("$files")
-    done < <(find "${root}/${i}" -name "img*.json" -print0)
+    # Copy the image links (*.json) to the days directory
+    for file in "${root}/${i}/metadata/links"/*; do
+        [ -f "${file}" ] || continue
 
-    for j in "${list[@]}"; do
-        basename=$(basename "${j}")
+        basename=$(basename "${file}")
         target="output/days/${basename}"
 
-        if [ "${target}" -nt "${j}" ]; then
-            echo "up-to-date: ${target}"
+        if [ "${target}" -nt "${file}" ]; then
+            : # echo "up-to-date: ${target}"
         else
-            echo "copying to: ${target}"
-            cp "${j}" "${target}"
+            echo "updating: ${target}"
+            cp "${file}" "${target}"
+            result=$?
+            if [ ! ${result} -eq 0 ]; then
+                echo "Error: $0[${LINENO}]"
+                echo "result: ${result}"
+                echo "${stdout}"
+                exit 1
+            fi
         fi
     done
-
 done
 
+
+
+
 echo "generate PDF diaries from the day files (*.json)"
-classpath="${generatorJar}:${diaryjsonJar}:${commonsCliJar}:${jacksonDataBindJar}:${jacksonCoreJar}:${jacksonAnnotationsJar}:${itextpdfJar}"
+
+classpath="${generatorJar}:${diaryjsonJar}:${commonsCliJar}:${jacksonDataBindJar}:${jacksonCoreJar}:${jacksonAnnotationsJar}"
+classpath="${classpath}:${itextpdfJar}:${itextpdfFormsJar}:${itextpdfKernelJar}:${itextpdfIOJar}:${itextpdfLayoutJar}:${itextpdfSvgJar}:${itextpdfStyledXmlParserJar}"
+classpath="${classpath}:${slf4jJar}"
+
+set -x
 java -cp ${classpath} com.rsmaxwell.generator.App --inputDir output/days --outputDir output 1>temp/stdout.txt 2>temp/stderr.txt
 result=$?
 if [ ! ${result} -eq 0 ]; then
@@ -267,5 +396,5 @@ if [ ! ${result} -eq 0 ]; then
     echo "----------------------------------------"
     exit 1
 fi
-
+set +x
 
