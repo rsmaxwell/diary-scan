@@ -63,7 +63,6 @@ function extractText {
 
 
 
-
 REPOSITORYURL="https://server.rsmaxwell.co.uk/archiva/repository"
 REPOSITORYID="releases"
 REPOSITORY="releases"
@@ -274,7 +273,7 @@ if [ ! ${result} -eq 0 ]; then
     exit 1
 fi
 
-mkdir -p "output/html/images"
+mkdir -p "output/html/images" "output/fragments" "temp"
 result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
@@ -286,7 +285,6 @@ fi
 
 
 classpath="${extractorJar}:${diaryjsonJar}:${commonsCliJar}:${jacksonDataBindJar}:${jacksonCoreJar}:${jacksonAnnotationsJar}:${slf4jJar}"
-
 
 #-------------------------------------------
 # Extract text from the diary word files (*.docx) into html fragments (*.json)
@@ -370,8 +368,16 @@ for i in "${dirs[@]}"; do
 
             # Write out the dependancy info for this image
             fragment="${root}/${i}/metadata/links/${basename%.*}.json"
-            if [ -f ${fragment} ]; then
-                year=$(jq '.year' ${fragment})
+            if [ -f "${fragment}" ]; then
+                year=$(jq '.year' "${fragment}")
+                result=$?
+                if [ ! ${result} -eq 0 ]; then
+                    echo "Error: $0[${LINENO}]"
+                    echo "result: ${result}"
+                    echo "${stdout}"
+                    exit 1
+                fi
+
                 echo ${basename} > "output/fragments/${year}.dep"
             else
                 echo "Error: $0[${LINENO}]"
@@ -413,7 +419,7 @@ classpath="${generatorJar}:${diaryjsonJar}:${commonsCliJar}:${jacksonDataBindJar
 classpath="${classpath}:${itextpdfJar}:${itextpdfFormsJar}:${itextpdfKernelJar}:${itextpdfIOJar}:${itextpdfLayoutJar}:${itextpdfSvgJar}:${itextpdfStyledXmlParserJar}"
 classpath="${classpath}:${slf4jJar}"
 
-java -cp ${classpath} com.rsmaxwell.generator.App --inputDir output/fragments --outputDir output 1>temp/stdout.txt 2>temp/stderr.txt
+java -cp ${classpath} com.rsmaxwell.generator.App --inputDir data --outputDir output 1>temp/stdout.txt 2>temp/stderr.txt
 result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"

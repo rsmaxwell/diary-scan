@@ -1,0 +1,12 @@
+<html>
+<head>
+<title>@@TITLE@@</title>
+<meta name="description" content="@@TITLE@@" />
+<link rel="stylesheet" type="text/css" href="css/diary.css">
+</head>
+<body>
+    <p>BUILD_ID:   @@BUILD_ID@@</p>
+    <p>BUILD_DATE: @@BUILD_DATE@@</p>
+    <p>GIT_COMMIT: @@GIT_COMMIT@@</p>
+    <p>GIT_BRANCH: @@GIT_BRANCH@@</p>
+    <p>GIT_URL:    @@GIT_URL@@</p>
