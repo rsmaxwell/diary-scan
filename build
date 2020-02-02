@@ -296,7 +296,7 @@ for i in "${dirs[@]}"; do
 
         basename=$(basename "${file}")
 
-        regex="^img[0-9]{4}(-(left|right))?$"
+        regex="^img[0-9]{4}(-(left|right))?\.docx$"
         if [[ "${basename}" =~ ${regex} ]]; then
 
             # Find the year that this diary word file refers to
