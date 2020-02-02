@@ -296,7 +296,7 @@ for i in "${dirs[@]}"; do
 
     for file in "${root}/${i}/metadata/word"/*.docx; do
 
-        basename=$(basename "${file}" ".docx")
+        basename=$(basename "${file}")
 
         regex="^img[0-9]{4}(-(left|right))?$"
         if [[ "${basename}" =~ ${regex} ]]; then
@@ -312,7 +312,7 @@ for i in "${dirs[@]}"; do
             fi
             year=${stdout}
 
-            makefile="output/dependancies/${basename}.mk"
+            makefile="output/dependancies/${basename%.*}.mk"
             if [ -f "${makefile}" ]; then
                 make --file "${makefile}"
             else
