@@ -2,6 +2,18 @@
 
 root="/media/NAS/photo/documents/sea-captains-chest"
 
+dirs=()
+dirs+=('diary 1828 and 1829 and jan 1830')
+dirs+=('diary 1830')
+dirs+=('diary 1831')
+dirs+=('diary 1832')
+dirs+=('diary 1834')
+dirs+=('diary 1835')
+dirs+=('diary 1836')
+dirs+=('diary 1837')
+dirs+=('diary 1838')
+dirs+=('diary 1839')
+
 
 function extractText {
 
@@ -26,12 +38,12 @@ function extractText {
     fi
 
     basename=$(basename "${inputFilename}" ".docx")
-    pagefile="./output/pages/${basename}"
+    dependancyfile="./output/dependancies/${basename}"
 
-    if [ "${pagefile}" -nt "${inputFilename}" ]; then
-        : # echo "page up-to-date: ${pagefile}"
+    if [ "${dependancyfile}" -nt "${inputFilename}" ]; then
+        : # echo "page up-to-date: ${dependancyfile}"
     else
-        echo "generating page: ${pagefile}"
+        echo "generating page: ${dependancyfile}"
 
         java -cp ${classpath} com.rsmaxwell.extractor.App --inputFile "${inputFilename}" --year ${year} 1>temp/stdout.txt 2>temp/stderr.txt
         result=$?
@@ -51,31 +63,6 @@ function extractText {
 
 
 
-if [ ! -d "${root}" ]; then
-    echo "Error: $0[${LINENO}]"
-    echo "root not found: [${root}]"
-    exit 1
-fi
-
-dirs=()
-dirs+=('diary 1828 and 1829 and jan 1830')
-dirs+=('diary 1830')
-dirs+=('diary 1831')
-dirs+=('diary 1832')
-dirs+=('diary 1834')
-dirs+=('diary 1835')
-dirs+=('diary 1836')
-dirs+=('diary 1837')
-dirs+=('diary 1838')
-dirs+=('diary 1839')
-
-rm -rf temp
-result=$?
-if [ ! ${result} -eq 0 ]; then
-    echo "Error: $0[${LINENO}]"
-    echo "result: ${result}"
-    exit 1
-fi
 
 REPOSITORYURL="https://server.rsmaxwell.co.uk/archiva/repository"
 REPOSITORYID="releases"
@@ -84,7 +71,7 @@ GROUPID="com.rsmaxwell.diary"
 
 ARTIFACTID="extractor"
 
-# echo "find the latest version of the extractor jar"
+# find the latest version of the extractor jar
 stdout=$(./getLatestJar "${REPOSITORYURL}" "${REPOSITORYID}" "${REPOSITORY}" "${GROUPID}" "${ARTIFACTID}")
 result=$?
 if [ ${result} -eq 0 ]; then
@@ -95,11 +82,10 @@ else
     echo "${stdout}"
     exit 1
 fi
-# echo "${extractorJar}"
 
 ARTIFACTID="diaryjson"
 
-# echo "find the latest version of the diaryjson jar"
+# find the latest version of the diaryjson jar
 stdout=$(./getLatestJar "${REPOSITORYURL}" "${REPOSITORYID}" "${REPOSITORY}" "${GROUPID}" "${ARTIFACTID}")
 result=$?
 if [ ${result} -eq 0 ]; then
@@ -110,11 +96,10 @@ else
     echo "${stdout}"
     exit 1
 fi
-# echo "${diaryjsonJar}"
 
 ARTIFACTID="generator"
 
-# echo "find the latest version of the generator jar"
+# find the latest version of the generator jar
 stdout=$(./getLatestJar "${REPOSITORYURL}" "${REPOSITORYID}" "${REPOSITORY}" "${GROUPID}" "${ARTIFACTID}")
 result=$?
 if [ ${result} -eq 0 ]; then
@@ -126,7 +111,7 @@ else
     exit 1
 fi
 
-# echo "get the CommonsCli Jar"
+# get the CommonsCli Jar
 stdout=$(./getJar "commons-cli" "commons-cli" "1.4")
 result=$?
 if [ ${result} -eq 0 ]; then
@@ -138,7 +123,7 @@ else
     exit 1
 fi
 
-# echo "get the JacksonDatabind Jar"
+# get the JacksonDatabind Jar
 stdout=$(./getJar "com.fasterxml.jackson.core" "jackson-databind" "2.10.2")
 result=$?
 if [ ${result} -eq 0 ]; then
@@ -150,7 +135,7 @@ else
     exit 1
 fi
 
-# echo "get the JacksonCore Jar"
+# get the JacksonCore Jar
 stdout=$(./getJar "com.fasterxml.jackson.core" "jackson-core" "2.10.2")
 result=$?
 if [ ${result} -eq 0 ]; then
@@ -162,7 +147,7 @@ else
     exit 1
 fi
 
-# echo "get the JacksonAnnotations Jar"
+# get the JacksonAnnotations Jar
 stdout=$(./getJar "com.fasterxml.jackson.core" "jackson-annotations" "2.10.2" )
 result=$?
 if [ ${result} -eq 0 ]; then
@@ -174,7 +159,7 @@ else
     exit 1
 fi
 
-# echo "get the itextpdf Jar"
+# get the itextpdf Jar
 stdout=$(./getJar "com.itextpdf" "html2pdf" "2.1.6" )
 result=$?
 if [ ${result} -eq 0 ]; then
@@ -186,7 +171,7 @@ else
     exit 1
 fi
 
-# echo "get the itextpdf forms Jar"
+# get the itextpdf forms Jar
 stdout=$(./getJar "com.itextpdf" "forms" "7.1.9" )
 result=$?
 if [ ${result} -eq 0 ]; then
@@ -198,7 +183,7 @@ else
     exit 1
 fi
 
-# echo "get the itextpdf kernel Jar"
+# get the itextpdf kernel Jar
 stdout=$(./getJar "com.itextpdf" "kernel" "7.1.9" )
 result=$?
 if [ ${result} -eq 0 ]; then
@@ -210,7 +195,7 @@ else
     exit 1
 fi
 
-# echo "get the itextpdf io Jar"
+# get the itextpdf io Jar
 stdout=$(./getJar "com.itextpdf" "io" "7.1.9" )
 result=$?
 if [ ${result} -eq 0 ]; then
@@ -222,7 +207,7 @@ else
     exit 1
 fi
 
-# echo "get the itextpdf layout Jar"
+# get the itextpdf layout Jar
 stdout=$(./getJar "com.itextpdf" "layout" "7.1.9" )
 result=$?
 if [ ${result} -eq 0 ]; then
@@ -234,7 +219,7 @@ else
     exit 1
 fi
 
-# echo "get the itextpdf svg Jar"
+# get the itextpdf svg Jar
 stdout=$(./getJar "com.itextpdf" "svg" "7.1.9" )
 result=$?
 if [ ${result} -eq 0 ]; then
@@ -246,7 +231,7 @@ else
     exit 1
 fi
 
-# echo "get the itextpdf styled-xml-parser Jar"
+# get the itextpdf styled-xml-parser Jar
 stdout=$(./getJar "com.itextpdf" "styled-xml-parser" "7.1.9" )
 result=$?
 if [ ${result} -eq 0 ]; then
@@ -258,7 +243,7 @@ else
     exit 1
 fi
 
-# echo "get the slf4j-api Jar"
+# get the slf4j-api Jar
 stdout=$(./getJar "org.slf4j" "slf4j-api" "1.7.13" )
 result=$?
 if [ ${result} -eq 0 ]; then
@@ -272,23 +257,51 @@ fi
 
 
 
+#-------------------------------------------
+# Check, clear and make directories 
+#-------------------------------------------
+if [ ! -d "${root}" ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "root not found: [${root}]"
+    exit 1
+fi
+
+rm -rf temp
+result=$?
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    exit 1
+fi
+
+mkdir -p "output/html/images"
+result=$?
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    exit 1
+fi
 
 
-# extract text from the diary pages (*.docx) into day files (*.json)
+
 
 classpath="${extractorJar}:${diaryjsonJar}:${commonsCliJar}:${jacksonDataBindJar}:${jacksonCoreJar}:${jacksonAnnotationsJar}:${slf4jJar}"
 
+
+#-------------------------------------------
+# Extract text from the diary word files (*.docx) into html fragments (*.json)
+#-------------------------------------------
 for i in "${dirs[@]}"; do
     # echo "${i}"
 
-    # Extract the text from the word files (*.docx) into the day files (*.json) 
-    for file in "${root}/${i}/metadata/word"/*; do
+    for file in "${root}/${i}/metadata/word"/*.docx; do
 
-        basename=$(basename "${file}")
+        basename=$(basename "${file}" ".docx")
 
-        regex="^img[0-9]{4}(-(left|right))?\.docx$"
+        regex="^img[0-9]{4}(-(left|right))?$"
         if [[ "${basename}" =~ ${regex} ]]; then
 
+            # Find the year that this diary word file refers to
             stdout=$("${root}/${i}/metadata/findyear" "${basename}")
             result=$?
             if [ ! ${result} -eq 0 ]; then
@@ -299,63 +312,28 @@ for i in "${dirs[@]}"; do
             fi
             year=${stdout}
 
- 
-            extractText "${file}" "${year}"
-            result=$?
-            if [ ! ${result} -eq 0 ]; then
-                echo "Error: $0[${LINENO}]"
-                echo "result: ${result}"
-                exit 1
-            fi
-        fi
-    done
-
-    # Copy the images to the html baseUrl directory
-    for file in "${root}/${i}"/*; do
-
-        basename=$(basename "${file}")
-
-        regx="^img([0-9]{4})-image-.*\.(jpg|png)$"
-        if [[ "${basename}" =~ ${regx} ]]; then
-
-            dirname=$(dirname "${file}")
-            script="${dirname}/metadata/findyear"
-            stdout=$("${script}" "${basename}")
-            result=$?
-            if [ ! ${result} -eq 0 ]; then
-                echo "Error: $0[${LINENO}]"
-                echo "result: ${result}"
-                echo "${stdout}"
-                exit 1
-            fi
-            year=${stdout}
-
-            # Create the html image directory
-            mkdir -p "output/html/${year}/images"
-            result=$?
-            if [ ! ${result} -eq 0 ]; then
-                echo "Error: $0[${LINENO}]"
-                echo "result: ${result}"
-                exit 1
-            fi
-
-            target="output/html/${year}/images/${basename}"
-            if [ "${target}" -nt "${file}" ]; then
-                : # echo "up-to-date: ${target}"
+            makefile="output/dependancies/${basename}.mk"
+            if [ -f "${makefile}" ]; then
+                make --file "${makefile}"
             else
-                echo "updating: ${target}"
-                cp "${file}" "${target}"
+                # Call the java extract program (which will also generate a makefile)
+                extractText "${file}" "${year}"
+                result=$?
+                if [ ! ${result} -eq 0 ]; then
+                    echo "Error: $0[${LINENO}]"
+                    echo "result: ${result}"
+                    exit 1
+                fi
             fi
         fi
     done
 
-
-    # Copy the image links (*.json) to the days directory
+    # Copy the manually crafted fragments (usually links to images) straight into the fragments directory
     for file in "${root}/${i}/metadata/links"/*; do
         [ -f "${file}" ] || continue
 
         basename=$(basename "${file}")
-        target="output/days/${basename}"
+        target="output/fragments/${basename}"
 
         if [ "${target}" -nt "${file}" ]; then
             : # echo "up-to-date: ${target}"
@@ -371,9 +349,50 @@ for i in "${dirs[@]}"; do
             fi
         fi
     done
+
+    # Copy the images to the html images directory
+    for file in "${root}/${i}"/*; do
+        [ -f "${file}" ] || continue
+
+        basename=$(basename "${file}")
+
+        regx="^img([0-9]{4})-image-.*\.(jpg|png)$"
+        if [[ "${basename}" =~ ${regx} ]]; then
+
+            # Copy the images to the html images directory
+            target="output/html/images/${basename}"
+            if [ "${target}" -nt "${file}" ]; then
+                : # echo "up-to-date: ${target}"
+            else
+                echo "updating: ${target}"
+                cp "${file}" "${target}"
+            fi
+        fi
+    done
 done
 
 
+# Copy the styles (*.css) to the html css directory
+for file in styles/*.css; do
+    [ -f "${file}" ] || continue
+
+    basename=$(basename "${file}")
+
+    target="output/html/css/${basename}"
+    if [ "${target}" -nt "${file}" ]; then
+        : # echo "up-to-date: ${target}"
+    else
+        echo "updating: ${target}"
+        cp "${file}" "${target}"
+        result=$?
+        if [ ! ${result} -eq 0 ]; then
+            echo "Error: $0[${LINENO}]"
+            echo "result: ${result}"
+            echo "${stdout}"
+            exit 1
+        fi
+    fi
+done
 
 
 echo "generate PDF diaries from the day files (*.json)"
@@ -382,7 +401,7 @@ classpath="${generatorJar}:${diaryjsonJar}:${commonsCliJar}:${jacksonDataBindJar
 classpath="${classpath}:${itextpdfJar}:${itextpdfFormsJar}:${itextpdfKernelJar}:${itextpdfIOJar}:${itextpdfLayoutJar}:${itextpdfSvgJar}:${itextpdfStyledXmlParserJar}"
 classpath="${classpath}:${slf4jJar}"
 
-java -cp ${classpath} com.rsmaxwell.generator.App --inputDir output/days --outputDir output 1>temp/stdout.txt 2>temp/stderr.txt
+java -cp ${classpath} com.rsmaxwell.generator.App --inputDir output/fragments --outputDir output 1>temp/stdout.txt 2>temp/stderr.txt
 result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
