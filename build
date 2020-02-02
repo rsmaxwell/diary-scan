@@ -3,16 +3,16 @@
 root="/media/NAS/photo/documents/sea-captains-chest"
 
 dirs=()
-dirs+=('diary 1828 and 1829 and jan 1830')
-dirs+=('diary 1830')
-dirs+=('diary 1831')
-dirs+=('diary 1832')
-dirs+=('diary 1834')
-dirs+=('diary 1835')
-dirs+=('diary 1836')
-dirs+=('diary 1837')
-dirs+=('diary 1838')
-dirs+=('diary 1839')
+dirs+=('diary-1828-and-1829-and-jan-1830')
+dirs+=('diary-1830')
+dirs+=('diary-1831')
+dirs+=('diary-1832')
+dirs+=('diary-1834')
+dirs+=('diary-1835')
+dirs+=('diary-1836')
+dirs+=('diary-1837')
+dirs+=('diary-1838')
+dirs+=('diary-1839')
 
 
 function extractText {
