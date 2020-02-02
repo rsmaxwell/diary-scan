@@ -367,6 +367,18 @@ for i in "${dirs[@]}"; do
                 echo "updating: ${target}"
                 cp "${file}" "${target}"
             fi
+
+            # Write out the dependancy info for this image
+            fragment="${root}/${i}/metadata/links/${basename%.*}.json"
+            if [ -f ${fragment} ]; then
+                year=$(jq '.year' ${fragment})
+                echo ${basename} > "output/fragments/${year}.dep"
+            else
+                echo "Error: $0[${LINENO}]"
+                echo "result: ${result}"
+                echo "missing fragment link for image file: ${fragment}"
+                exit 1
+            fi
         fi
     done
 done
