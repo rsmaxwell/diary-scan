@@ -1,0 +1,205 @@
+#!/bin/bash
+
+REPOSITORYURL="https://server.rsmaxwell.co.uk/archiva/repository"
+REPOSITORYID="releases"
+REPOSITORY="releases"
+GROUPID="com.rsmaxwell.diary"
+
+ARTIFACTID="generator"
+
+# find the latest version of the generator jar
+stdout=$(./getLatestJar "${REPOSITORYURL}" "${REPOSITORYID}" "${REPOSITORY}" "${GROUPID}" "${ARTIFACTID}")
+result=$?
+if [ ${result} -eq 0 ]; then
+    generatorJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+ARTIFACTID="diaryjson"
+
+# find the latest version of the diaryjson jar
+stdout=$(./getLatestJar "${REPOSITORYURL}" "${REPOSITORYID}" "${REPOSITORY}" "${GROUPID}" "${ARTIFACTID}")
+result=$?
+if [ ${result} -eq 0 ]; then
+    diaryjsonJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+# get the CommonsCli Jar
+stdout=$(./getJar "commons-cli" "commons-cli" "1.4")
+result=$?
+if [ ${result} -eq 0 ]; then
+    commonsCliJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+# get the JacksonDatabind Jar
+stdout=$(./getJar "com.fasterxml.jackson.core" "jackson-databind" "2.10.2")
+result=$?
+if [ ${result} -eq 0 ]; then
+    jacksonDataBindJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+# get the JacksonCore Jar
+stdout=$(./getJar "com.fasterxml.jackson.core" "jackson-core" "2.10.2")
+result=$?
+if [ ${result} -eq 0 ]; then
+    jacksonCoreJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+# get the JacksonAnnotations Jar
+stdout=$(./getJar "com.fasterxml.jackson.core" "jackson-annotations" "2.10.2" )
+result=$?
+if [ ${result} -eq 0 ]; then
+    jacksonAnnotationsJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+# get the itextpdf Jar
+stdout=$(./getJar "com.itextpdf" "html2pdf" "2.1.6" )
+result=$?
+if [ ${result} -eq 0 ]; then
+    itextpdfJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+# get the itextpdf forms Jar
+stdout=$(./getJar "com.itextpdf" "forms" "7.1.9" )
+result=$?
+if [ ${result} -eq 0 ]; then
+    itextpdfFormsJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+# get the itextpdf kernel Jar
+stdout=$(./getJar "com.itextpdf" "kernel" "7.1.9" )
+result=$?
+if [ ${result} -eq 0 ]; then
+    itextpdfKernelJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+# get the itextpdf io Jar
+stdout=$(./getJar "com.itextpdf" "io" "7.1.9" )
+result=$?
+if [ ${result} -eq 0 ]; then
+    itextpdfIOJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+# get the itextpdf layout Jar
+stdout=$(./getJar "com.itextpdf" "layout" "7.1.9" )
+result=$?
+if [ ${result} -eq 0 ]; then
+    itextpdfLayoutJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+# get the itextpdf svg Jar
+stdout=$(./getJar "com.itextpdf" "svg" "7.1.9" )
+result=$?
+if [ ${result} -eq 0 ]; then
+    itextpdfSvgJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+# get the itextpdf styled-xml-parser Jar
+stdout=$(./getJar "com.itextpdf" "styled-xml-parser" "7.1.9" )
+result=$?
+if [ ${result} -eq 0 ]; then
+    itextpdfStyledXmlParserJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+# get the slf4j-api Jar
+stdout=$(./getJar "org.slf4j" "slf4j-api" "1.7.13" )
+result=$?
+if [ ${result} -eq 0 ]; then
+    slf4jJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+
+
+
+
+
+
+# generate PDF diaries from the day files (*.json)
+
+classpath="${generatorJar}:${diaryjsonJar}:${commonsCliJar}:${jacksonDataBindJar}:${jacksonCoreJar}:${jacksonAnnotationsJar}"
+classpath="${classpath}:${itextpdfJar}:${itextpdfFormsJar}:${itextpdfKernelJar}:${itextpdfIOJar}:${itextpdfLayoutJar}:${itextpdfSvgJar}:${itextpdfStyledXmlParserJar}"
+classpath="${classpath}:${slf4jJar}"
+
+java -cp ${classpath} com.rsmaxwell.generator.App --inputDir data --outputDir output 1>temp/stdout.txt 2>temp/stderr.txt
+result=$?
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${inputFilename}"
+    echo "----[ stdout ]--------------------------"
+    cat temp/stdout.txt
+    echo "----[ stderr ]--------------------------"
+    cat temp/stderr.txt
+    echo "----------------------------------------"
+    exit 1
+fi
+

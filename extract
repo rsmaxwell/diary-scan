@@ -1,0 +1,143 @@
+#!/bin/bash
+
+inputFilename=${1}
+if [ -z "${inputFilename}" ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "missing inputFilename argument"
+    exit 1
+fi
+
+if [ ! -f "${inputFilename}" ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "file not found: \"${inputFilename}\""
+    exit 1
+fi
+
+
+
+
+
+REPOSITORYURL="https://server.rsmaxwell.co.uk/archiva/repository"
+REPOSITORYID="releases"
+REPOSITORY="releases"
+GROUPID="com.rsmaxwell.diary"
+
+ARTIFACTID="extractor"
+
+# find the latest version of the extractor jar
+stdout=$(./getLatestJar "${REPOSITORYURL}" "${REPOSITORYID}" "${REPOSITORY}" "${GROUPID}" "${ARTIFACTID}")
+result=$?
+if [ ${result} -eq 0 ]; then
+    extractorJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+# get the CommonsCli Jar
+stdout=$(./getJar "commons-cli" "commons-cli" "1.4")
+result=$?
+if [ ${result} -eq 0 ]; then
+    commonsCliJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+# get the JacksonDatabind Jar
+stdout=$(./getJar "com.fasterxml.jackson.core" "jackson-databind" "2.10.2")
+result=$?
+if [ ${result} -eq 0 ]; then
+    jacksonDataBindJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+# get the JacksonCore Jar
+stdout=$(./getJar "com.fasterxml.jackson.core" "jackson-core" "2.10.2")
+result=$?
+if [ ${result} -eq 0 ]; then
+    jacksonCoreJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+# get the JacksonAnnotations Jar
+stdout=$(./getJar "com.fasterxml.jackson.core" "jackson-annotations" "2.10.2" )
+result=$?
+if [ ${result} -eq 0 ]; then
+    jacksonAnnotationsJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+# get the slf4j-api Jar
+stdout=$(./getJar "org.slf4j" "slf4j-api" "1.7.13" )
+result=$?
+if [ ${result} -eq 0 ]; then
+    slf4jJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+#-------------------------------------------
+# Check, clear and make directories 
+#-------------------------------------------
+if [ ! -d "${root}" ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "root not found: [${root}]"
+    exit 1
+fi
+
+rm -rf temp
+result=$?
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    exit 1
+fi
+
+mkdir -p "output/html/images" "output/fragments" "temp"
+result=$?
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    exit 1
+fi
+
+#-------------------------------------------
+# Extract html fragments from the word file
+#-------------------------------------------
+classpath="${extractorJar}:${diaryjsonJar}:${commonsCliJar}:${jacksonDataBindJar}:${jacksonCoreJar}:${jacksonAnnotationsJar}:${slf4jJar}"
+
+java -cp ${classpath} com.rsmaxwell.extractor.App --inputFile "${inputFilename}" 1>temp/stdout.txt 2>temp/stderr.txt
+result=$?
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${inputFilename}"
+    echo "----[ stdout ]--------------------------"
+    cat temp/stdout.txt
+    echo "----[ stderr ]--------------------------"
+    cat temp/stderr.txt
+    echo "----------------------------------------"
+    exit 1
+fi
+
+
