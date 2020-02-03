@@ -24,13 +24,6 @@ function extractText {
         exit 1
     fi
 
-    year=${2}
-    if [ -z "${year}" ]; then
-        echo "Error: $0[${LINENO}]"
-        echo "missing year argument"
-        exit 1
-    fi
-
     if [ ! -f "${inputFilename}" ]; then
         echo "Error: $0[${LINENO}]"
         echo "file not found: \"${inputFilename}\""
@@ -45,7 +38,7 @@ function extractText {
     else
         echo "generating page: ${dependancyfile}"
 
-        java -cp ${classpath} com.rsmaxwell.extractor.App --inputFile "${inputFilename}" --year ${year} 1>temp/stdout.txt 2>temp/stderr.txt
+        java -cp ${classpath} com.rsmaxwell.extractor.App --inputFile "${inputFilename}" 1>temp/stdout.txt 2>temp/stderr.txt
         result=$?
         if [ ! ${result} -eq 0 ]; then
             echo "Error: $0[${LINENO}]"
@@ -299,23 +292,12 @@ for i in "${dirs[@]}"; do
         regex="^img[0-9]{4}(-(left|right))?\.docx$"
         if [[ "${basename}" =~ ${regex} ]]; then
 
-            # Find the year that this diary word file refers to
-            stdout=$("${root}/${i}/metadata/findyear" "${basename}")
-            result=$?
-            if [ ! ${result} -eq 0 ]; then
-                echo "Error: $0[${LINENO}]"
-                echo "result: ${result}"
-                echo "${stdout}"
-                exit 1
-            fi
-            year=${stdout}
-
             makefile="output/dependancies/${basename%.*}.mk"
             if [ -f "${makefile}" ]; then
                 make --file "${makefile}"
             else
                 # Call the java extract program (which will also generate a makefile)
-                extractText "${file}" "${year}"
+                extractText "${file}"
                 result=$?
                 if [ ! ${result} -eq 0 ]; then
                     echo "Error: $0[${LINENO}]"
