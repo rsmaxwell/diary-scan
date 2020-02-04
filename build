@@ -14,7 +14,6 @@ dirs+=('diary-1837')
 dirs+=('diary-1838')
 dirs+=('diary-1839')
 
-
 #-------------------------------------------
 # Check, clear and make directories 
 #-------------------------------------------
@@ -32,18 +31,13 @@ if [ ! ${result} -eq 0 ]; then
     exit 1
 fi
 
-mkdir -p "output/html/images" "output/fragments" "temp"
+mkdir -p "output/html/images" "output/html/css" "output/fragments" "temp"
 result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
     echo "result: ${result}"
     exit 1
 fi
-
-
-
-
-classpath="${extractorJar}:${diaryjsonJar}:${commonsCliJar}:${jacksonDataBindJar}:${jacksonCoreJar}:${jacksonAnnotationsJar}:${slf4jJar}"
 
 #-------------------------------------------
 # Extract text from the diary word files (*.docx) into html fragments (*.json)
@@ -147,7 +141,6 @@ for i in "${dirs[@]}"; do
     done
 done
 
-
 # Copy the styles (*.css) to the html css directory
 for file in data/styles/*.css; do
     [ -f "${file}" ] || continue
@@ -169,32 +162,6 @@ for file in data/styles/*.css; do
         fi
     fi
 done
-
-
-#-------------------------------------------
-# Check, clear and make directories 
-#-------------------------------------------
-if [ ! -d "${root}" ]; then
-    echo "Error: $0[${LINENO}]"
-    echo "root not found: [${root}]"
-    exit 1
-fi
-
-rm -rf temp
-result=$?
-if [ ! ${result} -eq 0 ]; then
-    echo "Error: $0[${LINENO}]"
-    echo "result: ${result}"
-    exit 1
-fi
-
-mkdir -p "output/html/images" "output/fragments" "temp"
-result=$?
-if [ ! ${result} -eq 0 ]; then
-    echo "Error: $0[${LINENO}]"
-    echo "result: ${result}"
-    exit 1
-fi
 
 #-------------------------------------------
 # Check, clear and make directories 
