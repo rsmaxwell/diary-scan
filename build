@@ -149,7 +149,7 @@ done
 
 
 # Copy the styles (*.css) to the html css directory
-for file in styles/*.css; do
+for file in data/styles/*.css; do
     [ -f "${file}" ] || continue
 
     basename=$(basename "${file}")
