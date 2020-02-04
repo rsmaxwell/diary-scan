@@ -15,185 +15,6 @@ dirs+=('diary-1838')
 dirs+=('diary-1839')
 
 
-REPOSITORYURL="https://server.rsmaxwell.co.uk/archiva/repository"
-REPOSITORYID="releases"
-REPOSITORY="releases"
-GROUPID="com.rsmaxwell.diary"
-
-ARTIFACTID="diaryjson"
-
-# find the latest version of the diaryjson jar
-stdout=$(./getLatestJar "${REPOSITORYURL}" "${REPOSITORYID}" "${REPOSITORY}" "${GROUPID}" "${ARTIFACTID}")
-result=$?
-if [ ${result} -eq 0 ]; then
-    diaryjsonJar=${stdout}
-else
-    echo "Error: $0[${LINENO}]"
-    echo "result: ${result}"
-    echo "${stdout}"
-    exit 1
-fi
-
-ARTIFACTID="generator"
-
-# find the latest version of the generator jar
-stdout=$(./getLatestJar "${REPOSITORYURL}" "${REPOSITORYID}" "${REPOSITORY}" "${GROUPID}" "${ARTIFACTID}")
-result=$?
-if [ ${result} -eq 0 ]; then
-    generatorJar=${stdout}
-else
-    echo "Error: $0[${LINENO}]"
-    echo "result: ${result}"
-    echo "${stdout}"
-    exit 1
-fi
-
-# get the CommonsCli Jar
-stdout=$(./getJar "commons-cli" "commons-cli" "1.4")
-result=$?
-if [ ${result} -eq 0 ]; then
-    commonsCliJar=${stdout}
-else
-    echo "Error: $0[${LINENO}]"
-    echo "result: ${result}"
-    echo "${stdout}"
-    exit 1
-fi
-
-# get the JacksonDatabind Jar
-stdout=$(./getJar "com.fasterxml.jackson.core" "jackson-databind" "2.10.2")
-result=$?
-if [ ${result} -eq 0 ]; then
-    jacksonDataBindJar=${stdout}
-else
-    echo "Error: $0[${LINENO}]"
-    echo "result: ${result}"
-    echo "${stdout}"
-    exit 1
-fi
-
-# get the JacksonCore Jar
-stdout=$(./getJar "com.fasterxml.jackson.core" "jackson-core" "2.10.2")
-result=$?
-if [ ${result} -eq 0 ]; then
-    jacksonCoreJar=${stdout}
-else
-    echo "Error: $0[${LINENO}]"
-    echo "result: ${result}"
-    echo "${stdout}"
-    exit 1
-fi
-
-# get the JacksonAnnotations Jar
-stdout=$(./getJar "com.fasterxml.jackson.core" "jackson-annotations" "2.10.2" )
-result=$?
-if [ ${result} -eq 0 ]; then
-    jacksonAnnotationsJar=${stdout}
-else
-    echo "Error: $0[${LINENO}]"
-    echo "result: ${result}"
-    echo "${stdout}"
-    exit 1
-fi
-
-# get the itextpdf Jar
-stdout=$(./getJar "com.itextpdf" "html2pdf" "2.1.6" )
-result=$?
-if [ ${result} -eq 0 ]; then
-    itextpdfJar=${stdout}
-else
-    echo "Error: $0[${LINENO}]"
-    echo "result: ${result}"
-    echo "${stdout}"
-    exit 1
-fi
-
-# get the itextpdf forms Jar
-stdout=$(./getJar "com.itextpdf" "forms" "7.1.9" )
-result=$?
-if [ ${result} -eq 0 ]; then
-    itextpdfFormsJar=${stdout}
-else
-    echo "Error: $0[${LINENO}]"
-    echo "result: ${result}"
-    echo "${stdout}"
-    exit 1
-fi
-
-# get the itextpdf kernel Jar
-stdout=$(./getJar "com.itextpdf" "kernel" "7.1.9" )
-result=$?
-if [ ${result} -eq 0 ]; then
-    itextpdfKernelJar=${stdout}
-else
-    echo "Error: $0[${LINENO}]"
-    echo "result: ${result}"
-    echo "${stdout}"
-    exit 1
-fi
-
-# get the itextpdf io Jar
-stdout=$(./getJar "com.itextpdf" "io" "7.1.9" )
-result=$?
-if [ ${result} -eq 0 ]; then
-    itextpdfIOJar=${stdout}
-else
-    echo "Error: $0[${LINENO}]"
-    echo "result: ${result}"
-    echo "${stdout}"
-    exit 1
-fi
-
-# get the itextpdf layout Jar
-stdout=$(./getJar "com.itextpdf" "layout" "7.1.9" )
-result=$?
-if [ ${result} -eq 0 ]; then
-    itextpdfLayoutJar=${stdout}
-else
-    echo "Error: $0[${LINENO}]"
-    echo "result: ${result}"
-    echo "${stdout}"
-    exit 1
-fi
-
-# get the itextpdf svg Jar
-stdout=$(./getJar "com.itextpdf" "svg" "7.1.9" )
-result=$?
-if [ ${result} -eq 0 ]; then
-    itextpdfSvgJar=${stdout}
-else
-    echo "Error: $0[${LINENO}]"
-    echo "result: ${result}"
-    echo "${stdout}"
-    exit 1
-fi
-
-# get the itextpdf styled-xml-parser Jar
-stdout=$(./getJar "com.itextpdf" "styled-xml-parser" "7.1.9" )
-result=$?
-if [ ${result} -eq 0 ]; then
-    itextpdfStyledXmlParserJar=${stdout}
-else
-    echo "Error: $0[${LINENO}]"
-    echo "result: ${result}"
-    echo "${stdout}"
-    exit 1
-fi
-
-# get the slf4j-api Jar
-stdout=$(./getJar "org.slf4j" "slf4j-api" "1.7.13" )
-result=$?
-if [ ${result} -eq 0 ]; then
-    slf4jJar=${stdout}
-else
-    echo "Error: $0[${LINENO}]"
-    echo "result: ${result}"
-    echo "${stdout}"
-    exit 1
-fi
-
-
-
 #-------------------------------------------
 # Check, clear and make directories 
 #-------------------------------------------
@@ -228,7 +49,7 @@ classpath="${extractorJar}:${diaryjsonJar}:${commonsCliJar}:${jacksonDataBindJar
 # Extract text from the diary word files (*.docx) into html fragments (*.json)
 #-------------------------------------------
 for i in "${dirs[@]}"; do
-    # echo "${i}"
+    echo "---[ ${i} ]------------"
 
     for file in "${root}/${i}/metadata/word"/*.docx; do
 
@@ -239,10 +60,20 @@ for i in "${dirs[@]}"; do
 
             makefile="output/dependancies/${basename%.*}.mk"
             if [ -f "${makefile}" ]; then
+
+                # Call 'make' to call the java extract program
                 make --file "${makefile}"
+                result=$?
+                if [ ! ${result} -eq 0 ]; then
+                    echo "Error: $0[${LINENO}]"
+                    echo "result: ${result}"
+                    echo "make --file \"${makefile}\""
+                    exit 1
+                fi
             else
-                # Call the java extract program (which will also generate a makefile)
-                call extract "${file}"
+                # Call the java extract program (which will also generate a makefile for next time round)
+                echo "./extract \"${file}\""
+                ./extract "${file}"
                 result=$?
                 if [ ! ${result} -eq 0 ]; then
                     echo "Error: $0[${LINENO}]"
@@ -368,7 +199,7 @@ fi
 #-------------------------------------------
 # Check, clear and make directories 
 #-------------------------------------------
-call generate
+./generate
 result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"

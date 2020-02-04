@@ -36,6 +36,20 @@ else
     exit 1
 fi
 
+ARTIFACTID="diaryjson"
+
+# find the latest version of the diaryjson jar
+stdout=$(./getLatestJar "${REPOSITORYURL}" "${REPOSITORYID}" "${REPOSITORY}" "${GROUPID}" "${ARTIFACTID}")
+result=$?
+if [ ${result} -eq 0 ]; then
+    diaryjsonJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
 # get the CommonsCli Jar
 stdout=$(./getJar "commons-cli" "commons-cli" "1.4")
 result=$?
@@ -93,31 +107,6 @@ else
     echo "Error: $0[${LINENO}]"
     echo "result: ${result}"
     echo "${stdout}"
-    exit 1
-fi
-
-#-------------------------------------------
-# Check, clear and make directories 
-#-------------------------------------------
-if [ ! -d "${root}" ]; then
-    echo "Error: $0[${LINENO}]"
-    echo "root not found: [${root}]"
-    exit 1
-fi
-
-rm -rf temp
-result=$?
-if [ ! ${result} -eq 0 ]; then
-    echo "Error: $0[${LINENO}]"
-    echo "result: ${result}"
-    exit 1
-fi
-
-mkdir -p "output/html/images" "output/fragments" "temp"
-result=$?
-if [ ! ${result} -eq 0 ]; then
-    echo "Error: $0[${LINENO}]"
-    echo "result: ${result}"
     exit 1
 fi
 
