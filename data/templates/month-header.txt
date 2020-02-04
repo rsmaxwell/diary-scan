@@ -1,1 +1,1 @@
-<p>@@MONTH_NAME@@</p>
+<h3>@@MONTH_NAME@@</h3>

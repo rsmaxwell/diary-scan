@@ -1,1 +1,1 @@
-<p>@@DAY_NAME@@   @@DAY@@</p>
+<h4>@@DAY_NAME@@   @@DAY@@</h4>
