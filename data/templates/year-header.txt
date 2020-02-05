@@ -1,3 +1,0 @@
-<div class="year">
-<h2>@@YEAR@@</h2>
-</div>
