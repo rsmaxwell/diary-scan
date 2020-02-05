@@ -1,3 +1,37 @@
+
+.title {
+align: center;
+font-family: 'Pinyon Script', cursive;
+font-size: 100px;
+}
+
+.normal {
+margin-left: 50px;
+margin-right: 50px;
+font-family: Georgia, serif;
+font-style: normal;
+}
+
+.day {
+color: red;
+font-family: 'Pinyon Script', cursive;
+font-size: 25px;
+}
+
+.month {
+color: red;
+font-family: 'Pinyon Script', cursive;
+font-size: 50px;
+}
+
+.year {
+color: red;
+font-family: 'Pinyon Script', cursive;
+font-size: 75px;
+}
+
+
+
 .highlight_yellow {
 background-color: yellow;
 }

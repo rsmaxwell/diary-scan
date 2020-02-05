@@ -1,1 +1,3 @@
+<div class="day">
 <h4>@@DAY_NAME@@   @@DAY@@</h4>
+</div>

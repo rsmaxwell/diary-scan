@@ -1,1 +1,3 @@
+<div class="month">
 <h3>@@MONTH_NAME@@</h3>
+</div>
