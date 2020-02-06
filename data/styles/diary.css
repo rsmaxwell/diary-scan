@@ -1,16 +1,52 @@
 
-
-.intro-1 {
-  font-family: 'Tangerine', serif;
-  font-size: 48px;
-  text-shadow: 4px 4px 4px #aaa;
+.intro-large {
+color: navy;
+margin-left: 50px;
+margin-right: 50px;
+text-align: center;
+font-family: 'Pinyon Script', cursive;
+font-size: 60px;
 }
 
-.intro-2 {
-  font-family: 'Tangerine', serif;
-  font-size: 48px;
-  text-shadow: 4px 4px 4px #aaa;
-  text-align:right;
+.intro-medium {
+color: navy;
+margin-left: 50px;
+margin-right: 50px;
+text-align: center;
+font-family: 'Pinyon Script', cursive;
+font-size: 30px;
+}
+
+.intro-medium-right {
+color: navy;
+margin-left: 50px;
+margin-right: 50px;
+text-align: right;
+font-family: 'Pinyon Script', cursive;
+font-size: 30px;
+}
+
+.normal {
+margin-left: 50px;
+margin-right: 50px;
+}
+
+.year {
+color: navy;
+font-family: 'Pinyon Script', cursive;
+font-size: 50px;
+}
+
+.month {
+color: navy;
+font-family: 'Pinyon Script', cursive;
+font-size: 40px;
+}
+
+.day {
+color: navy;
+font-family: 'Pinyon Script', cursive;
+font-size: 30px;
 }
 
 .highlight_yellow {
