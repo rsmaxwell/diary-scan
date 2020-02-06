@@ -1,19 +1,12 @@
 <html>
 <head>
-<title>@@TITLE@@</title>
-<meta name="description" content="@@TITLE@@" />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Pinyon+Script&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Pinyon+Script">
 <link rel="stylesheet" type="text/css" href="css/diary.css">
+<title>Diary of John Richard Scott - @@YEAR@@</title>
+<meta name="description" content="@@TITLE@@" />
 </head>
 <body>
-
-<div class="title">
-<h1>Diary of John Richard Scott - @@YEAR@@</h1>
-</div>
-
 <div class="normal">
-<p>Copyright © 2020 Richard Scott Maxwell</p>
-
 <p>BUILD_ID:   @@BUILD_ID@@</p>
 <p>BUILD_DATE: @@BUILD_DATE@@</p>
 <p>GIT_COMMIT: @@GIT_COMMIT@@</p>

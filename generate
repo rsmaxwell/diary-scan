@@ -166,10 +166,22 @@ else
 fi
 
 # get the slf4j-api Jar
-stdout=$(./getJar "org.slf4j" "slf4j-api" "1.7.13" )
+stdout=$(./getJar "org.slf4j" "slf4j-api" "2.0.0-alpha1" )
 result=$?
 if [ ${result} -eq 0 ]; then
-    slf4jJar=${stdout}
+    slf4jApiJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+# get the slf4j-simple Jar
+stdout=$(./getJar "org.slf4j" "slf4j-simple" "2.0.0-alpha1" )
+result=$?
+if [ ${result} -eq 0 ]; then
+    slf4jSimpleJar=${stdout}
 else
     echo "Error: $0[${LINENO}]"
     echo "result: ${result}"
@@ -187,7 +199,7 @@ fi
 
 classpath="${generatorJar}:${diaryjsonJar}:${commonsCliJar}:${jacksonDataBindJar}:${jacksonCoreJar}:${jacksonAnnotationsJar}"
 classpath="${classpath}:${itextpdfJar}:${itextpdfFormsJar}:${itextpdfKernelJar}:${itextpdfIOJar}:${itextpdfLayoutJar}:${itextpdfSvgJar}:${itextpdfStyledXmlParserJar}"
-classpath="${classpath}:${slf4jJar}"
+classpath="${classpath}:${slf4jApiJar}:${classpath}:${slf4jSimpleJar}"
 
 java -cp ${classpath} com.rsmaxwell.generator.App --inputDir data --outputDir output 1>temp/stdout.txt 2>temp/stderr.txt
 result=$?

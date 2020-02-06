@@ -1,43 +1,16 @@
 
-.title {
-margin-left: 50px;
-margin-right: 50px;
-text-align: center;
-font-family: 'Pinyon Script', cursive;
-font-size: 50px;
-}
 
 .intro-1 {
-margin-left: 50px;
-margin-right: 50px;
-text-align: center;
-font-family: 'Pinyon Script', cursive;
-font-size: 75px;
+  font-family: 'Tangerine', serif;
+  font-size: 48px;
+  text-shadow: 4px 4px 4px #aaa;
 }
 
 .intro-2 {
-margin-left: 50px;
-margin-right: 50px;
-text-align: right;
-font-family: 'Pinyon Script', cursive;
-font-size: 50px;
-}
-
-.normal {
-margin-left: 50px;
-margin-right: 50px;
-}
-
-.day {
-color: navy;
-font-family: 'Pinyon Script', cursive;
-font-size: 25px;
-}
-
-.month {
-color: navy;
-font-family: 'Pinyon Script', cursive;
-font-size: 50px;
+  font-family: 'Tangerine', serif;
+  font-size: 48px;
+  text-shadow: 4px 4px 4px #aaa;
+  text-align:right;
 }
 
 .highlight_yellow {
