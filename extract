@@ -115,7 +115,7 @@ fi
 #-------------------------------------------
 classpath="${extractorJar}:${diaryjsonJar}:${commonsCliJar}:${jacksonDataBindJar}:${jacksonCoreJar}:${jacksonAnnotationsJar}:${slf4jJar}"
 
-java -cp ${classpath} com.rsmaxwell.extractor.App --inputFile "${inputFilename}" 1>temp/stdout.txt 2>temp/stderr.txt
+java -cp ${classpath} com.rsmaxwell.extractor.App --wordFile "${inputFilename}" 1>temp/stdout.txt 2>temp/stderr.txt
 result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
