@@ -128,7 +128,7 @@ for i in "${dirs[@]}"; do
             fi
 
             # Write out the dependancy info for this image
-            fragment="${root}/${i}/metadata/links/${basename%.*}.json"
+            fragment="${root}/${i}/metadata/fragment/${basename%.*}.json"
             if [ -f "${fragment}" ]; then
                 year=$(jq '.year' "${fragment}")
                 result=$?
@@ -143,7 +143,7 @@ for i in "${dirs[@]}"; do
             else
                 echo "Error: $0[${LINENO}]"
                 echo "result: ${result}"
-                echo "missing fragment link for image file: ${fragment}"
+                echo "missing fragment for image file: ${fragment}"
                 exit 1
             fi
         fi
