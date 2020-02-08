@@ -201,7 +201,7 @@ classpath="${generatorJar}:${diaryjsonJar}:${commonsCliJar}:${jacksonDataBindJar
 classpath="${classpath}:${itextpdfJar}:${itextpdfFormsJar}:${itextpdfKernelJar}:${itextpdfIOJar}:${itextpdfLayoutJar}:${itextpdfSvgJar}:${itextpdfStyledXmlParserJar}"
 classpath="${classpath}:${slf4jApiJar}:${classpath}:${slf4jSimpleJar}"
 
-java -cp ${classpath} com.rsmaxwell.generator.App --inputDir data --outputDir output 1>temp/stdout.txt 2>temp/stderr.txt
+java -cp ${classpath} com.rsmaxwell.generator.App 1>temp/stdout.txt 2>temp/stderr.txt
 result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
