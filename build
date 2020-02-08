@@ -109,7 +109,7 @@ for i in "${dirs[@]}"; do
         fi
     done
 
-    # Copy the images to the html images directory
+    # Copy the images and also their fragment dirs to output
     for file in "${root}/${i}"/*; do
         [ -f "${file}" ] || continue
 
@@ -119,39 +119,79 @@ for i in "${dirs[@]}"; do
         if [[ "${basename}" =~ ${regx} ]]; then
 
             # Copy the images to the html images directory
-            target="output/html/images/${basename}"
-            if [ "${target}" -nt "${file}" ]; then
-                : # echo "up-to-date: ${target}"
+            imageSource=${file}
+            imageTarget="output/html/images/${basename}"
+            if [ "${imageTarget}" -nt "${imageSource}" ]; then
+                : # echo "up-to-date: ${imageTarget}"
             else
-                echo "updating: ${target}"
-                cp "${file}" "${target}"
+                echo "updating: ${imageTarget}"
+                cp "${imageSource}" "${imageTarget}"
             fi
 
             extension="${basename##*.}"
             filename="${basename%.*}"
 
-            # Write out the dependancy info for this image
-            fragment="${root}/${i}/metadata/fragments/${filename}/fragment.json"
-            if [ -f "${fragment}" ]; then
-                year=$(jq '.year' "${fragment}")
-                result=$?
-                if [ ! ${result} -eq 0 ]; then
-                    echo "Error: $0[${LINENO}]"
-                    echo "result: ${result}"
-                    echo "${stdout}"
-                    exit 1
-                fi
-
-                echo ${basename} > "output/fragments/${year}.dep"
-            else
+            # Check the image fragment exists
+            fragment="${root}/${i}/metadata/fragments/${filename}"
+            if [ ! -d "${fragment}" ]; then
                 echo "Error: $0[${LINENO}]"
                 echo "result: ${result}"
                 echo "missing fragment for image file: ${fragment}"
                 exit 1
             fi
+
+            # Copy the image fragment dir to the output directory
+            target="output/fragments/${filename}"
+            if [ "${target}" -nt "${fragment}" ]; then
+                : # echo "up-to-date: ${target}"
+            else
+                echo "updating: ${target}"
+                mkdirs -p "${target}"
+            fi
+
+            src="${fragment}/fragment.html"
+            trg="${target}/fragment.html"
+            if [ "${trg}" -nt "${src}" ]; then
+                : # echo "up-to-date: ${trg}"
+            else
+                echo "updating: ${target}"
+                cp -r "${src}" "${trg}"
+            fi
+
+            src="${fragment}/fragment.json"
+            trg="${target}/fragment.json"
+            if [ "${trg}" -nt "${src}" ]; then
+                : # echo "up-to-date: ${trg}"
+            else
+                echo "updating: ${target}"
+                cp -r "${src}" "${trg}"
+            fi
+
+            # Output the dependancies
+            year=$(jq '.year' "${fragment}")
+            result=$?
+            if [ ! ${result} -eq 0 ]; then
+                echo "Error: $0[${LINENO}]"
+                echo "result: ${result}"
+                echo "${stdout}"
+                exit 1
+            fi
+
+            makefile="output/dependancies/${year}.mk"
+            if [ ! -f "${makefile}" ]; then
+                printf "${year}.html : " > ${makefile}
+            fi
+            printf "\\\n    ${target}/fragment.html" >> ${makefile}
+            printf "\\\n    ${target}/fragment.json" >> ${makefile}
+            printf "\\\n    ${imageTarget}" >> ${makefile}
         fi
     done
 done
+
+for makefile in output/dependancies/*.mk; do
+    printf "\n" >> ${makefile}
+done
+
 
 # Copy the styles (*.css) to the html css directory
 for file in input/styles/*; do
