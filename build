@@ -77,6 +77,10 @@ for i in "${dirs[@]}"; do
 
 set -x
             makefile="output/dependancies/${basename%.*}.mk"
+pwd
+ls -al 
+ls -al "${makefile}"
+
             if [ -f "${makefile}" ]; then
 
                 # Call 'make' to call the java extract program
