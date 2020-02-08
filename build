@@ -154,7 +154,7 @@ for i in "${dirs[@]}"; do
 done
 
 # Copy the styles (*.css) to the html css directory
-for file in data/styles/*; do
+for file in input/styles/*; do
     [ -f "${file}" ] || continue
 
     basename=$(basename "${file}")
