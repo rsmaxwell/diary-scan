@@ -127,10 +127,9 @@ for i in "${dirs[@]}"; do
                 cp "${file}" "${target}"
             fi
 
-set -x
             extension="${basename##*.}"
             filename="${basename%.*}"
-set +x
+
             # Write out the dependancy info for this image
             fragment="${root}/${i}/metadata/fragments/${filename}/fragment.json"
             if [ -f "${fragment}" ]; then
