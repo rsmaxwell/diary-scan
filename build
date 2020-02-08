@@ -128,7 +128,7 @@ for i in "${dirs[@]}"; do
             fi
 
             # Write out the dependancy info for this image
-            fragment="${root}/${i}/metadata/fragment/${basename%.*}.json"
+            fragment="${root}/${i}/metadata/fragments/${basename%.*}.json"
             if [ -f "${fragment}" ]; then
                 year=$(jq '.year' "${fragment}")
                 result=$?
