@@ -49,6 +49,20 @@ export BUILD_MONTH=$(date '+%m')
 export BUILD_DAY=$(date '+%d')
 
 #-------------------------------------------
+# Clear the dependancies 
+#-------------------------------------------
+rm -rf output/dependancies/*
+result=$?
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "make --file \"${makefile}\""
+    exit 1
+fi
+
+declare -a makefiles=()
+
+#-------------------------------------------
 # Extract text from the diary word files (*.docx) into html fragments (*.json)
 #-------------------------------------------
 for i in "${dirs[@]}"; do
@@ -180,6 +194,7 @@ for i in "${dirs[@]}"; do
             makefile="output/dependancies/${year}.mk"
             if [ ! -f "${makefile}" ]; then
                 printf "${year}.html : " > ${makefile}
+                makefiles+="${makefile}"
             fi
             printf "\\\n    ${target}/fragment.html" >> ${makefile}
             printf "\\\n    ${target}/fragment.json" >> ${makefile}
@@ -188,12 +203,14 @@ for i in "${dirs[@]}"; do
     done
 done
 
-for makefile in output/dependancies/*.mk; do
+# Terminate the dependancy files
+for makefile in "${makefiles[@]}"; do
     printf "\n" >> ${makefile}
 done
 
-
+#-------------------------------------------
 # Copy the styles (*.css) to the html css directory
+#-------------------------------------------
 for file in input/styles/*; do
     [ -f "${file}" ] || continue
 
