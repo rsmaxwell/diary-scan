@@ -49,9 +49,9 @@ export BUILD_MONTH=$(date '+%m')
 export BUILD_DAY=$(date '+%d')
 
 #-------------------------------------------
-# Clear the dependancies 
+# Clear the temporary directory 
 #-------------------------------------------
-rm -rf output/dependancies/*
+mkdir -p output/temp
 result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
@@ -60,7 +60,14 @@ if [ ! ${result} -eq 0 ]; then
     exit 1
 fi
 
-declare -a makefiles=()
+rm -rf output/temp/*
+result=$?
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "make --file \"${makefile}\""
+    exit 1
+fi
 
 #-------------------------------------------
 # Extract text from the diary word files (*.docx) into html fragments (*.json)
@@ -74,18 +81,11 @@ for i in "${dirs[@]}"; do
 
         regex="^img[0-9]{4}(-(left|right))?\.docx$"
         if [[ "${basename}" =~ ${regex} ]]; then
-
-set -x
             makefile="output/dependancies/${basename%.*}.mk"
-pwd
-ls -al 
-ls -al "${makefile}"
 
             if [ -f "${makefile}" ]; then
 
                 # Call 'make' to call the java extract program
-                echo "The Makefile WAS found: ${makefile} ..."
-                echo "make --file \"${makefile}\""
                 make --file "${makefile}"
                 result=$?
                 if [ ! ${result} -eq 0 ]; then
@@ -96,8 +96,6 @@ ls -al "${makefile}"
                 fi
             else
                 # Call the java extract program (which will also generate a makefile for next time round)
-                echo "The Makefile was not found: ${makefile} ..."
-                echo "./extract \"${file}\""
                 ./extract "${file}"
                 result=$?
                 if [ ! ${result} -eq 0 ]; then
@@ -106,8 +104,6 @@ ls -al "${makefile}"
                     exit 1
                 fi
             fi
-echo "... exiting ..."
-exit 99
         fi
     done
 
@@ -198,13 +194,13 @@ exit 99
                 echo "Error: $0[${LINENO}]"
                 echo "result: ${result}"
                 echo "${stdout}"
+                echo "fragment: ${fragment}"
                 exit 1
             fi
 
-            makefile="output/dependancies/${year}.mk"
+            makefile="output/temp/${year}.mk"
             if [ ! -f "${makefile}" ]; then
                 printf "${year}.html : " > ${makefile}
-                makefiles+="${makefile}"
             fi
             printf "\\\n    ${target}/fragment.html" >> ${makefile}
             printf "\\\n    ${target}/fragment.json" >> ${makefile}
@@ -213,9 +209,18 @@ exit 99
     done
 done
 
-# Terminate the dependancy files
-for makefile in "${makefiles[@]}"; do
+# Terminate the dependancy files, and copy to the dependancy directory
+for makefile in "output/temp/"*; do
     printf "\n" >> ${makefile}
+
+    cp ${makefile} "output/dependancies/"
+    result=$?
+    if [ ! ${result} -eq 0 ]; then
+        echo "Error: $0[${LINENO}]"
+        echo "result: ${result}"
+        echo "${stdout}"
+        exit 1
+    fi
 done
 
 #-------------------------------------------
