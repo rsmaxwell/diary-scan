@@ -39,6 +39,15 @@ if [ ! ${result} -eq 0 ]; then
     exit 1
 fi
 
+
+#-------------------------------------------
+# Export the build timestamp 
+#-------------------------------------------
+export BUILD_DATE=$(date '+%Y-%m-%d %H:%M:%S')
+export BUILD_YEAR=$(date '+%Y')
+export BUILD_MONTH=$(date '+%m')
+export BUILD_DAY=$(date '+%d')
+
 #-------------------------------------------
 # Extract text from the diary word files (*.docx) into html fragments (*.json)
 #-------------------------------------------
@@ -142,7 +151,7 @@ for i in "${dirs[@]}"; do
 done
 
 # Copy the styles (*.css) to the html css directory
-for file in data/styles/*.css; do
+for file in data/styles/*; do
     [ -f "${file}" ] || continue
 
     basename=$(basename "${file}")
