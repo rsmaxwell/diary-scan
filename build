@@ -80,6 +80,7 @@ set -x
             if [ -f "${makefile}" ]; then
 
                 # Call 'make' to call the java extract program
+                echo "The Makefile WAS found: ${makefile} ..."
                 echo "make --file \"${makefile}\""
                 make --file "${makefile}"
                 result=$?
@@ -91,6 +92,7 @@ set -x
                 fi
             else
                 # Call the java extract program (which will also generate a makefile for next time round)
+                echo "The Makefile was not found: ${makefile} ..."
                 echo "./extract \"${file}\""
                 ./extract "${file}"
                 result=$?
