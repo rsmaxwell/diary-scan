@@ -75,6 +75,7 @@ for i in "${dirs[@]}"; do
         regex="^img[0-9]{4}(-(left|right))?\.docx$"
         if [[ "${basename}" =~ ${regex} ]]; then
 
+set -x
             makefile="output/dependancies/${basename%.*}.mk"
             if [ -f "${makefile}" ]; then
 
@@ -98,30 +99,32 @@ for i in "${dirs[@]}"; do
                     exit 1
                 fi
             fi
+echo "... exiting ..."
+exit 99
         fi
     done
 
     # Copy the manually crafted fragments (usually links to images) straight into the fragments directory
-    for file in "${root}/${i}/metadata/links"/*; do
-        [ -f "${file}" ] || continue
-
-        basename=$(basename "${file}")
-        target="output/fragments/${basename}"
-
-        if [ "${target}" -nt "${file}" ]; then
-            : # echo "up-to-date: ${target}"
-        else
-            echo "updating: ${target}"
-            cp "${file}" "${target}"
-            result=$?
-            if [ ! ${result} -eq 0 ]; then
-                echo "Error: $0[${LINENO}]"
-                echo "result: ${result}"
-                echo "${stdout}"
-                exit 1
-            fi
-        fi
-    done
+    # for file in "${root}/${i}/metadata/fragments"/*; do
+    #     [ -f "${file}" ] || continue
+	# 
+    #     basename=$(basename "${file}")
+    #     target="output/fragments/${basename}"
+	# 
+    #     if [ "${target}" -nt "${file}" ]; then
+    #         : # echo "up-to-date: ${target}"
+    #     else
+    #         echo "updating: ${target}"
+    #         cp "${file}" "${target}"
+    #         result=$?
+    #         if [ ! ${result} -eq 0 ]; then
+    #             echo "Error: $0[${LINENO}]"
+    #             echo "result: ${result}"
+    #             echo "${stdout}"
+    #             exit 1
+    #         fi
+    #     fi
+    # done
 
     # Copy the images and also their fragment dirs to output
     for file in "${root}/${i}"/*; do
