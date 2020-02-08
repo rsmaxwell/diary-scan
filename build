@@ -168,7 +168,7 @@ for i in "${dirs[@]}"; do
             fi
 
             # Output the dependancies
-            year=$(jq '.year' "${fragment}")
+            year=$(jq '.year' "${fragment}/fragment.json")
             result=$?
             if [ ! ${result} -eq 0 ]; then
                 echo "Error: $0[${LINENO}]"
