@@ -80,6 +80,7 @@ set -x
             if [ -f "${makefile}" ]; then
 
                 # Call 'make' to call the java extract program
+                echo "make --file \"${makefile}\""
                 make --file "${makefile}"
                 result=$?
                 if [ ! ${result} -eq 0 ]; then
