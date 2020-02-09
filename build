@@ -210,7 +210,11 @@ for i in "${dirs[@]}"; do
     target="output/fragments/"
     cp -r ${source} ${target}
     result=$?
-    if [ ! ${result} -eq 0 ]; then
+    if [ ${result} -eq 0 ]; then
+        : # ok
+    elif [ ${result} -eq 1 ]; then
+        : # ok
+    else
         echo "Error: $0[${LINENO}]"
         echo "result: ${result}"
         echo "${stdout}"
