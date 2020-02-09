@@ -107,29 +107,7 @@ for i in "${dirs[@]}"; do
         fi
     done
 
-    # Copy the manually crafted fragments (usually links to images) straight into the fragments directory
-    # for file in "${root}/${i}/metadata/fragments"/*; do
-    #     [ -f "${file}" ] || continue
-	# 
-    #     basename=$(basename "${file}")
-    #     target="output/fragments/${basename}"
-	# 
-    #     if [ "${target}" -nt "${file}" ]; then
-    #         : # echo "up-to-date: ${target}"
-    #     else
-    #         echo "updating: ${target}"
-    #         cp "${file}" "${target}"
-    #         result=$?
-    #         if [ ! ${result} -eq 0 ]; then
-    #             echo "Error: $0[${LINENO}]"
-    #             echo "result: ${result}"
-    #             echo "${stdout}"
-    #             exit 1
-    #         fi
-    #     fi
-    # done
-
-    # Copy the images and also their fragment dirs to output
+    # Copy the images and their fragments
     for file in "${root}/${i}"/*; do
         [ -f "${file}" ] || continue
 
@@ -209,7 +187,7 @@ for i in "${dirs[@]}"; do
     done
 done
 
-# Terminate the dependancy files, and copy to the dependancy directory
+# Terminate the dependancy files, and copy
 for makefile in "output/temp/"*; do
     printf "\n" >> ${makefile}
 
@@ -224,7 +202,7 @@ for makefile in "output/temp/"*; do
 done
 
 #-------------------------------------------
-# Copy the styles (*.css) to the html css directory
+# Copy the styles (*.css)
 #-------------------------------------------
 for file in input/styles/*; do
     [ -f "${file}" ] || continue
