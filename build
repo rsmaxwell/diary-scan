@@ -207,7 +207,7 @@ done
 set -x
 for i in "${dirs[@]}"; do
     echo "---[ ${i} ]------------"
-    source="${root}/${i}/metadata/fragments/"
+    source="${root}/${i}/metadata/fragments"/*
     target="output/fragments/"
     cp -r ${source} ${target}
     result=$?
