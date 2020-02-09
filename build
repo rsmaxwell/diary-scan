@@ -207,17 +207,16 @@ done
 set -x
 for i in "${dirs[@]}"; do
     echo "---[ ${i} ]------------"
-    for fragment in "${root}/${i}/metadata/fragments"/*; do
-        target="output/fragments/"
-        cp -r ${fragment} ${target}
-        result=$?
-        if [ ! ${result} -eq 0 ]; then
-            echo "Error: $0[${LINENO}]"
-            echo "result: ${result}"
-            echo "${stdout}"
-            exit 1
-        fi
-    done
+    source="${root}/${i}/metadata/fragments/"
+    target="output/fragments/"
+    cp -r ${source} ${target}
+    result=$?
+    if [ ! ${result} -eq 0 ]; then
+        echo "Error: $0[${LINENO}]"
+        echo "result: ${result}"
+        echo "${stdout}"
+        exit 1
+    fi
 done
 set +x
 #-------------------------------------------
