@@ -202,6 +202,24 @@ for makefile in "output/temp/"*; do
 done
 
 #-------------------------------------------
+# Copy the manually crafted fragments 
+#-------------------------------------------
+for i in "${dirs[@]}"; do
+    echo "---[ ${i} ]------------"
+    for fragment in "${root}/${i}/metadata/fragments"/*; do
+        target="output/fragments/"
+        cp -r ${fragment} ${target}
+        result=$?
+        if [ ! ${result} -eq 0 ]; then
+            echo "Error: $0[${LINENO}]"
+            echo "result: ${result}"
+            echo "${stdout}"
+            exit 1
+        fi
+    done
+done
+
+#-------------------------------------------
 # Copy the styles (*.css)
 #-------------------------------------------
 for file in input/styles/*; do
