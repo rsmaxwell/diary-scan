@@ -204,6 +204,7 @@ done
 #-------------------------------------------
 # Copy the manually crafted fragments 
 #-------------------------------------------
+set -x
 for i in "${dirs[@]}"; do
     echo "---[ ${i} ]------------"
     for fragment in "${root}/${i}/metadata/fragments"/*; do
@@ -218,7 +219,7 @@ for i in "${dirs[@]}"; do
         fi
     done
 done
-
+set +x
 #-------------------------------------------
 # Copy the styles (*.css)
 #-------------------------------------------
