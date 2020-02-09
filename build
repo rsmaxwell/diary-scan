@@ -208,7 +208,7 @@ for i in "${dirs[@]}"; do
     echo "---[ ${i} ]------------"
     source="${root}/${i}/metadata/fragments"/*
     target="output/fragments/"
-    cp -r ${source} ${target}
+    cp -r ${source} ${target} 1>/dev/null 2>/dev/null
     result=$?
     if [ ${result} -eq 0 ]; then
         : # ok
