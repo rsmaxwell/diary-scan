@@ -34,7 +34,7 @@ function copyFragment() {
         exit 1
     fi
 
-    basename=$(basename, ${sourceFragmentDir})
+    basename=$(basename ${sourceFragmentDir})
     extension="${basename##*.}"
     filename="${basename%.*}"
     targetFragmentDir="${targetFragmentsDir}/${filename}"
@@ -190,31 +190,34 @@ for i in "${dirs[@]}"; do
     for file in "${root}/${i}/metadata/word"/*.docx; do
 
         basename=$(basename "${file}")
+        extension="${basename##*.}"
+        filename="${basename%.*}"
 
         regex="^img[0-9]{4}(-(left|right))?\.docx$"
-        if [[ "${basename}" =~ ${regex} ]]; then
-            makefile="output/dependancies/${basename%.*}.mk"
+        if [[ ! "${basename}" =~ ${regex} ]]; then
+            continue
+        fi
 
-            if [ -f "${makefile}" ]; then
+        makefile="output/dependancies/${filename}.mk"
+        if [ -f "${makefile}" ]; then
 
-                # Call 'make' to call the java extract program
-                make --file "${makefile}"
-                result=$?
-                if [ ! ${result} -eq 0 ]; then
-                    echo "Error: $0[${LINENO}]"
-                    echo "result: ${result}"
-                    echo "make --file \"${makefile}\""
-                    exit 1
-                fi
-            else
-                # Call the 'java' extract program
-                ./extract "${file}"
-                result=$?
-                if [ ! ${result} -eq 0 ]; then
-                    echo "Error: $0[${LINENO}]"
-                    echo "result: ${result}"
-                    exit 1
-                fi
+            # Call 'make' to call the java extract program
+            make --file "${makefile}"
+            result=$?
+            if [ ! ${result} -eq 0 ]; then
+                echo "Error: $0[${LINENO}]"
+                echo "result: ${result}"
+                echo "make --file \"${makefile}\""
+                exit 1
+            fi
+        else
+            # Call the 'java' extract program
+            ./extract "${file}"
+            result=$?
+            if [ ! ${result} -eq 0 ]; then
+                echo "Error: $0[${LINENO}]"
+                echo "result: ${result}"
+                exit 1
             fi
         fi
     done

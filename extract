@@ -120,12 +120,13 @@ result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
     echo "result: ${result}"
-    echo "${inputFilename}"
+    echo "inputFilename: ${inputFilename}"
     echo "----[ stdout ]--------------------------"
     cat temp/stdout.txt
     echo "----[ stderr ]--------------------------"
     cat temp/stderr.txt
     echo "----------------------------------------"
+    echo "classpath: ${classpath}"
     exit 1
 fi
 
