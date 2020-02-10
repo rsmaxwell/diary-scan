@@ -256,7 +256,7 @@ for i in "${dirs[@]}"; do
 
         # Copy the image fragments
         sourceFragmentDir="${root}/${i}/metadata/fragments/${filename}"
-        targetFragmentsDir="./output/fragments/"
+        targetFragmentsDir="./output/fragments"
         copyFragment "${sourceFragmentDir}" "${targetFragmentsDir}"
         result=$?
         if [ ! ${result} -eq 0 ]; then
@@ -274,7 +274,7 @@ for makefile in "output/temp/"*; do
     printf "\n" >> ${makefile}
 
     src="${makefile}"
-    trg="${output/dependancies/}"
+    trg="output/dependancies/"
     cp "${src}" "${trg}"
     result=$?
     if [ ! ${result} -eq 0 ]; then
