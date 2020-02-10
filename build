@@ -57,7 +57,7 @@ function copyFragment() {
     if [ "${trg}" -nt "${src}" ]; then
         : # echo "up-to-date: ${trg}"
     else
-        echo "updating: ${targetFragmentDir}"
+        echo "updating: ${targetFragmentDir}/fragment.html"
         cp -r "${src}" "${trg}"
         result=$?
         if [ ! ${result} -eq 0 ]; then
@@ -74,7 +74,7 @@ function copyFragment() {
     if [ "${trg}" -nt "${src}" ]; then
         : # echo "up-to-date: ${trg}"
     else
-        echo "updating: ${targetFragmentDir}"
+        echo "updating: ${targetFragmentDir}/fragment.json"
         cp -r "${src}" "${trg}"
         result=$?
         if [ ! ${result} -eq 0 ]; then
