@@ -87,7 +87,7 @@ function copyFragment() {
     fi
 
     # Output the dependancies
-    year=$(jq '.year' "${fragment}/fragment.json")
+    year=$(jq '.year' "${sourceFragmentDir}/fragment.json")
     result=$?
     if [ ! ${result} -eq 0 ]; then
         echo "Error: $0[${LINENO}]"
