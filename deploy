@@ -1,0 +1,61 @@
+#!/bin/bash
+
+set -x
+filename="who-is-coming.pdf"
+localpath="/cygdrive/z/Documents/text/2020/2020-01-04 BATS New Year Walk/${filename}"
+remotepath="/srv/files/${filename}"
+
+
+echo "... Exiting ..."
+exit 99
+
+echo "ufw allow ssh"
+ssh server sudo ufw allow 39263 >/dev/null
+result=$?
+if [ ! ${result} == 0 ]; then
+    echo "result = ${result}"
+    exit 1
+fi
+
+echo "scp -q \"${localpath}\" server:${filename}" 
+scp -q "${localpath}" server:${filename}
+result=$?
+if [ ! ${result} == 0 ]; then
+    echo "$(basename $0)[${LINENO}]"
+    echo "result = ${result}"
+    rc2=1
+fi
+
+ssh server sudo mv ${filename} ${remotepath}
+result=$?
+if [ ! ${result} == 0 ]; then
+    echo "$(basename $0)[${LINENO}]"
+    echo "result = ${result}"
+    rc2=1
+fi
+
+ssh server sudo chmod 664 ${remotepath}
+result=$?
+if [ ! ${result} == 0 ]; then
+    echo "$(basename $0)[${LINENO}]"
+    echo "result = ${result}"
+    rc2=1
+fi
+
+ssh server sudo chown www-data:www-data ${remotepath}
+result=$?
+if [ ! ${result} == 0 ]; then
+    echo "$(basename $0)[${LINENO}]"
+    echo "result = ${result}"
+    rc2=1
+fi
+
+echo "ufw limit ssh"
+ssh server sudo ufw limit 39263 >/dev/null
+result=$?
+if [ ! ${result} == 0 ]; then
+    echo "result = ${result}"
+    rc2=1
+fi
+
+sleep 3
