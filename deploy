@@ -1,61 +1,77 @@
 #!/bin/bash
 
-set -x
-filename="who-is-coming.pdf"
-localpath="/cygdrive/z/Documents/text/2020/2020-01-04 BATS New Year Walk/${filename}"
-remotepath="/srv/files/${filename}"
+. /opt/tasks/task-definitions
+
+#########################################################################################
+# Create a task to apply the feature
+#########################################################################################
+echo "Create a task to apply the feature"
+taskDir=$(newTask)
 
 
-echo "... Exiting ..."
-exit 99
+#########################################################################################
+# Create a task to configure the plain-text site
+#########################################################################################
+echo "Create a task to configure the plain-text site"
+task=${tasksBase}/${taskDir}/task
 
-echo "ufw allow ssh"
-ssh server sudo ufw allow 39263 >/dev/null
+cat >${task} <<'EOL'
+#!/bin/bash
+
+set -x 
+sudo chown -R www-data:www-data html/
 result=$?
-if [ ! ${result} == 0 ]; then
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
     echo "result = ${result}"
     exit 1
 fi
 
-echo "scp -q \"${localpath}\" server:${filename}" 
-scp -q "${localpath}" server:${filename}
+sudo chmod -R 700 html/
 result=$?
-if [ ! ${result} == 0 ]; then
-    echo "$(basename $0)[${LINENO}]"
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
     echo "result = ${result}"
-    rc2=1
+    exit 1
 fi
 
-ssh server sudo mv ${filename} ${remotepath}
+sudo rsync -avh --delete html/ /srv/httpd/htdocs/diaries
 result=$?
-if [ ! ${result} == 0 ]; then
-    echo "$(basename $0)[${LINENO}]"
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
     echo "result = ${result}"
-    rc2=1
+    exit 1
 fi
 
-ssh server sudo chmod 664 ${remotepath}
+EOL
+
+
+#########################################################################################
+# Populate the task with the run script and associated files
+#########################################################################################
+set -x
+echo "Populate the task"
+
+directory=$(pwd)
+( cd ${tasksBase}/${taskDir}; mkdir -p ./html; cp -rs ${directory}/output/html/* ./html/ )
 result=$?
-if [ ! ${result} == 0 ]; then
-    echo "$(basename $0)[${LINENO}]"
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
     echo "result = ${result}"
-    rc2=1
+    exit 1
+fi
+set +x
+#########################################################################################
+# Run the task
+#########################################################################################
+echo "Run task"
+machine="server"
+runTask ${machine} ${taskDir}
+result=$?
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result = ${result}"
+    exit 1
 fi
 
-ssh server sudo chown www-data:www-data ${remotepath}
-result=$?
-if [ ! ${result} == 0 ]; then
-    echo "$(basename $0)[${LINENO}]"
-    echo "result = ${result}"
-    rc2=1
-fi
 
-echo "ufw limit ssh"
-ssh server sudo ufw limit 39263 >/dev/null
-result=$?
-if [ ! ${result} == 0 ]; then
-    echo "result = ${result}"
-    rc2=1
-fi
-
-sleep 3
