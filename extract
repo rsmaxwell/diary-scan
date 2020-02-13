@@ -50,11 +50,23 @@ else
     exit 1
 fi
 
-# get the CommonsCli Jar
+# get the ApacheCommonsCli Jar
 stdout=$(./getJar "commons-cli" "commons-cli" "1.4")
 result=$?
 if [ ${result} -eq 0 ]; then
-    commonsCliJar=${stdout}
+    apacheCommonsCliJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+# get the ApacheCommonsText Jar
+stdout=$(./getJar "org.apache.commons" "commons-text" "1.8" )
+result=$?
+if [ ${result} -eq 0 ]; then
+    apacheCommonsTextJar=${stdout}
 else
     echo "Error: $0[${LINENO}]"
     echo "result: ${result}"
@@ -99,10 +111,10 @@ else
 fi
 
 # get the slf4j-api Jar
-stdout=$(./getJar "org.slf4j" "slf4j-api" "1.7.13" )
+stdout=$(./getJar "org.slf4j" "slf4j-api" "2.0.0-alpha1" )
 result=$?
 if [ ${result} -eq 0 ]; then
-    slf4jJar=${stdout}
+    slf4jApiJar=${stdout}
 else
     echo "Error: $0[${LINENO}]"
     echo "result: ${result}"
@@ -110,10 +122,26 @@ else
     exit 1
 fi
 
+# get the slf4jSimpleJar Jar
+stdout=$(./getJar "org.slf4j" "slf4j-simple" "2.0.0-alpha1" )
+result=$?
+if [ ${result} -eq 0 ]; then
+    slf4jSimpleJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+
 #-------------------------------------------
 # Extract html fragments from the word file
 #-------------------------------------------
-classpath="${extractorJar}:${diaryjsonJar}:${commonsCliJar}:${jacksonDataBindJar}:${jacksonCoreJar}:${jacksonAnnotationsJar}:${slf4jJar}"
+classpath="${extractorJar}:${diaryjsonJar}"
+classpath="${classpath}:${apacheCommonsCliJar}:${apacheCommonsTextJar}"
+classpath="${classpath}:${jacksonDataBindJar}:${jacksonCoreJar}:${jacksonAnnotationsJar}"
+classpath="${classpath}:${slf4jApiJar}:${slf4jSimpleJar}"
 
 java -cp ${classpath} com.rsmaxwell.extractor.App --wordFile "${inputFilename}" 1>temp/stdout.txt 2>temp/stderr.txt
 result=$?

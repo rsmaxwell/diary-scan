@@ -33,11 +33,11 @@ else
     exit 1
 fi
 
-# get the CommonsCli Jar
+# get the ApacheCommonsCli Jar
 stdout=$(./getJar "commons-cli" "commons-cli" "1.4")
 result=$?
 if [ ${result} -eq 0 ]; then
-    commonsCliJar=${stdout}
+    apacheCommonsCliJar=${stdout}
 else
     echo "Error: $0[${LINENO}]"
     echo "result: ${result}"
@@ -197,9 +197,11 @@ fi
 
 # generate PDF diaries from the day files (*.json)
 
-classpath="${generatorJar}:${diaryjsonJar}:${commonsCliJar}:${jacksonDataBindJar}:${jacksonCoreJar}:${jacksonAnnotationsJar}"
+classpath="${generatorJar}:${diaryjsonJar}"
+classpath="${classpath}:${apacheCommonsCliJar}"
+classpath="${classpath}:${jacksonDataBindJar}:${jacksonCoreJar}:${jacksonAnnotationsJar}"
 classpath="${classpath}:${itextpdfJar}:${itextpdfFormsJar}:${itextpdfKernelJar}:${itextpdfIOJar}:${itextpdfLayoutJar}:${itextpdfSvgJar}:${itextpdfStyledXmlParserJar}"
-classpath="${classpath}:${slf4jApiJar}:${classpath}:${slf4jSimpleJar}"
+classpath="${classpath}:${slf4jApiJar}:${slf4jSimpleJar}"
 
 java -cp ${classpath} com.rsmaxwell.generator.App 1>temp/stdout.txt 2>temp/stderr.txt
 result=$?
