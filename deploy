@@ -35,7 +35,7 @@ if [ ! ${result} -eq 0 ]; then
     exit 1
 fi
 
-sudo rsync -avh --delete --exclude html/pages html/ /srv/httpd/htdocs/diaries
+sudo rsync -avh --delete --exclude pages html/ /srv/httpd/htdocs/diaries
 result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
