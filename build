@@ -339,7 +339,7 @@ done
 #-------------------------------------------
 # Check, clear and make directories 
 #-------------------------------------------
-./generate
+./generate input/templates output
 result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"

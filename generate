@@ -3,7 +3,7 @@
 templatesDir=${1}
 if [ -z "${templatesDir}" ]; then
     echo "Error: $0[${LINENO}]"
-    echo "missing templatesDir argument"
+    echo "missing templates argument"
     exit 1
 fi
 
@@ -17,7 +17,7 @@ fi
 outputDir=${1}
 if [ -z "${outputDir}" ]; then
     echo "Error: $0[${LINENO}]"
-    echo "missing outputDir argument"
+    echo "missing output argument"
     exit 1
 fi
 
