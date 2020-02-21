@@ -337,7 +337,7 @@ for file in input/styles/*; do
 done
 
 #-------------------------------------------
-# Check, clear and make directories 
+# Generate the HTML documents from the fragments 
 #-------------------------------------------
 ./generate input/templates output
 result=$?
@@ -346,3 +346,27 @@ if [ ! ${result} -eq 0 ]; then
     echo "result: ${result}"
     exit 1
 fi
+
+#-------------------------------------------
+# Generate an index.html pointing to the diaries
+#-------------------------------------------
+cat << EOF > /output/html/index.html
+<!DOCTYPE html>
+<html>
+
+<body>
+
+<h1>Diaries</h1>
+
+<ul>
+    <li><a href="1828.html">1828</a><br>
+    <li><a href="1829.html">1829</a><br>
+    <li><a href="1830.html">1830</a><br>
+    <li><a href="1832.html">1832</a><br>
+</ul>
+
+
+</body>
+</html>
+
+EOF
