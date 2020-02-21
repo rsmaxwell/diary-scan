@@ -1,5 +1,34 @@
 #!/bin/bash
 
+templatesDir=${1}
+if [ -z "${templatesDir}" ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "missing templatesDir argument"
+    exit 1
+fi
+
+if [ ! -f "${templatesDir}" ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "file not found: \"${templatesDir}\""
+    exit 1
+fi
+
+
+outputDir=${1}
+if [ -z "${outputDir}" ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "missing outputDir argument"
+    exit 1
+fi
+
+if [ ! -f "${outputDir}" ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "file not found: \"${outputDir}\""
+    exit 1
+fi
+
+
+
 REPOSITORYURL="https://server.rsmaxwell.co.uk/archiva/repository"
 REPOSITORYID="releases"
 REPOSITORY="releases"
@@ -203,7 +232,7 @@ classpath="${classpath}:${jacksonDataBindJar}:${jacksonCoreJar}:${jacksonAnnotat
 classpath="${classpath}:${itextpdfJar}:${itextpdfFormsJar}:${itextpdfKernelJar}:${itextpdfIOJar}:${itextpdfLayoutJar}:${itextpdfSvgJar}:${itextpdfStyledXmlParserJar}"
 classpath="${classpath}:${slf4jApiJar}:${slf4jSimpleJar}"
 
-java -cp ${classpath} com.rsmaxwell.generator.App 1>temp/stdout.txt 2>temp/stderr.txt
+java -cp ${classpath} com.rsmaxwell.generator.App --templates ${templatesDir} --output ${outputDir}  1>temp/stdout.txt 2>temp/stderr.txt
 result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"

@@ -187,16 +187,18 @@ fi
 for i in "${dirs[@]}"; do
     echo "---[ ${i} ]------------"
 
-    for file in "${root}/${i}/metadata/word"/*.docx; do
+    for wordFile in "${root}/${i}/metadata/word"/*.docx; do
 
-        basename=$(basename "${file}")
+        basename=$(basename "${wordFile}")
         extension="${basename##*.}"
         filename="${basename%.*}"
 
-        regex="^img[0-9]{4}(-(left|right))?\.docx$"
+        regex="^(img[0-9]{4})(-(left|right))?\.docx$"
         if [[ ! "${basename}" =~ ${regex} ]]; then
             continue
         fi
+
+        imageFile="${i}/${BASH_REMATCH[1]}.jpg"
 
         makefile="output/dependancies/${filename}.mk"
         if [ -f "${makefile}" ]; then
@@ -211,8 +213,8 @@ for i in "${dirs[@]}"; do
                 exit 1
             fi
         else
-            # Call the 'java' extract program
-            ./extract "${file}"
+            # Call the 'java' extract program directly
+            ./extract "${wordFile}" "${imageFile}"
             result=$?
             if [ ! ${result} -eq 0 ]; then
                 echo "Error: $0[${LINENO}]"
