@@ -14,7 +14,7 @@ if [ ! -d "${templatesDir}" ]; then
 fi
 
 
-outputDir=${1}
+outputDir=${2}
 if [ -z "${outputDir}" ]; then
     echo "Error: $0[${LINENO}]"
     echo "missing output argument"
@@ -237,7 +237,8 @@ result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
     echo "result: ${result}"
-    echo "${inputFilename}"
+    echo "templatesDir: ${templatesDir}"
+    echo "outputDir:    ${outputDir}"
     echo "----[ stdout ]--------------------------"
     cat temp/stdout.txt
     echo "----[ stderr ]--------------------------"
