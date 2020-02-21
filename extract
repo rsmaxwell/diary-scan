@@ -14,7 +14,7 @@ if [ ! -f "${wordFile}" ]; then
 fi
 
 
-imageFile=${1}
+imageFile=${2}
 if [ -z "${imageFile}" ]; then
     echo "Error: $0[${LINENO}]"
     echo "missing imageFile argument"
