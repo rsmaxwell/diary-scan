@@ -7,7 +7,7 @@ if [ -z "${templatesDir}" ]; then
     exit 1
 fi
 
-if [ ! -f "${templatesDir}" ]; then
+if [ ! -d "${templatesDir}" ]; then
     echo "Error: $0[${LINENO}]"
     echo "file not found: \"${templatesDir}\""
     exit 1
@@ -21,7 +21,7 @@ if [ -z "${outputDir}" ]; then
     exit 1
 fi
 
-if [ ! -f "${outputDir}" ]; then
+if [ ! -d "${outputDir}" ]; then
     echo "Error: $0[${LINENO}]"
     echo "file not found: \"${outputDir}\""
     exit 1
