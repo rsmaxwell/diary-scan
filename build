@@ -350,7 +350,7 @@ fi
 #-------------------------------------------
 # Generate an index.html pointing to the diaries
 #-------------------------------------------
-cat << EOF > /output/html/index.html
+cat << EOF > output/html/index.html
 <!DOCTYPE html>
 <html>
 
