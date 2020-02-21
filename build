@@ -198,7 +198,7 @@ for i in "${dirs[@]}"; do
             continue
         fi
 
-        imageFile="${i}/${BASH_REMATCH[1]}.jpg"
+        imageFile="pages/${i}/${BASH_REMATCH[1]}.jpg"
 
         makefile="output/dependancies/${filename}.mk"
         if [ -f "${makefile}" ]; then
