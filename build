@@ -298,7 +298,7 @@ done
 #-------------------------------------------
 set -x
 for dir in output/fragments/*; do
-    [ -f "${dir}" ] || continue
+    [ -d "${dir}" ] || continue
 
     year=$(basename ${dir})
 
