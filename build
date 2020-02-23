@@ -339,9 +339,12 @@ done
 #-------------------------------------------
 # Generate the HTML documents from the fragments 
 #-------------------------------------------
-for year in output/*; do
+for dir in output/*; do
     [ -f "${year}" ] || continue
 
+    year=$(basename ${dir})
+
+    echo "generating diary for year: ${year}"
     ./generate input/templates output year
     result=$?
     if [ ! ${result} -eq 0 ]; then
