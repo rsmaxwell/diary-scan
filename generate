@@ -9,7 +9,7 @@ fi
 
 if [ ! -d "${templatesDir}" ]; then
     echo "Error: $0[${LINENO}]"
-    echo "file not found: \"${templatesDir}\""
+    echo "dir not found: \"${templatesDir}\""
     exit 1
 fi
 
@@ -23,9 +23,24 @@ fi
 
 if [ ! -d "${outputDir}" ]; then
     echo "Error: $0[${LINENO}]"
-    echo "file not found: \"${outputDir}\""
+    echo "dir not found: \"${outputDir}\""
     exit 1
 fi
+
+
+year=${3}
+if [ -z "${outputDir}" ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "missing year argument"
+    exit 1
+fi
+
+if [ ! -d "${outputDir}/${year}" ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "dir not found: \"${outputDir}/${year}\""
+    exit 1
+fi
+
 
 
 
@@ -232,7 +247,7 @@ classpath="${classpath}:${jacksonDataBindJar}:${jacksonCoreJar}:${jacksonAnnotat
 classpath="${classpath}:${itextpdfJar}:${itextpdfFormsJar}:${itextpdfKernelJar}:${itextpdfIOJar}:${itextpdfLayoutJar}:${itextpdfSvgJar}:${itextpdfStyledXmlParserJar}"
 classpath="${classpath}:${slf4jApiJar}:${slf4jSimpleJar}"
 
-java -cp ${classpath} com.rsmaxwell.generator.App --templates ${templatesDir} --output ${outputDir}  1>temp/stdout.txt 2>temp/stderr.txt
+java -cp ${classpath} com.rsmaxwell.generator.App --templates ${templatesDir} --output ${outputDir} --year ${year} 1>temp/stdout.txt 2>temp/stderr.txt
 result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"

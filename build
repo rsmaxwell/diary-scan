@@ -339,13 +339,17 @@ done
 #-------------------------------------------
 # Generate the HTML documents from the fragments 
 #-------------------------------------------
-./generate input/templates output
-result=$?
-if [ ! ${result} -eq 0 ]; then
-    echo "Error: $0[${LINENO}]"
-    echo "result: ${result}"
-    exit 1
-fi
+for year in output/*; do
+    [ -f "${year}" ] || continue
+
+    ./generate input/templates output year
+    result=$?
+    if [ ! ${result} -eq 0 ]; then
+        echo "Error: $0[${LINENO}]"
+        echo "result: ${result}"
+        exit 1
+    fi
+done
 
 #-------------------------------------------
 # Generate an index.html pointing to the diaries
