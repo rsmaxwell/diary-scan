@@ -35,9 +35,11 @@ if [ -z "${outputDir}" ]; then
     exit 1
 fi
 
-if [ ! -d "${outputDir}/${year}" ]; then
+targetFragmentsDir="${outputDir}/fragments/${year}"
+
+if [ ! -d "${targetFragmentsDir}" ]; then
     echo "Error: $0[${LINENO}]"
-    echo "dir not found: \"${outputDir}/${year}\""
+    echo "dir not found: \"${targetFragmentsDir}\""
     exit 1
 fi
 
