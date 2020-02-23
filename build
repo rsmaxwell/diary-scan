@@ -27,7 +27,7 @@ function copyFragment() {
         exit 1
     fi
 
-    targetFragmentsDir="output/fragments/${year}/"
+    targetFragmentsDir="output/fragments/${year}"
     targetHtmlDir="output/html/"
 
     # Make sure the target fragment directory exists
@@ -54,14 +54,23 @@ function copyFragment() {
     filename="${basename%.*}"
     targetFragment="${targetFragmentsDir}/${filename}"
 
+    mkdir -p "${targetFragment}"
+    result=$?
+    if [ ! ${result} -eq 0 ]; then
+        echo "Error: $0[${LINENO}]"
+        echo "result: ${result}"
+        echo "targetFragment: ${targetFragment}"
+        exit 1
+    fi
+
     for source in "${fragment}"/*; do
-        [ -f "${fragment}" ] || continue
+        [ ! -f "${fragment}" ] || continue
 
         basename=$(basename "${source}")
         extension="${basename##*.}"
         filename="${basename%.*}"
 
-        if [ ${extension,,} ~= "html|json" ]; then 
+        if [[ "${extension,,}" =~ html|json ]]; then 
             target="${targetFragment}/${basename}"
             if [ "${target}" -nt "${source}" ]; then
                 : # echo "up-to-date: ${target}"
@@ -79,7 +88,7 @@ function copyFragment() {
             fi
         fi
 
-        if [ ${extension,,} ~= "jpg|jpeg|png" ]; then 
+        if [[ ${extension,,} =~ jpg|jpeg|png ]]; then 
             target="${targetHtmlDir}/images/${basename}"
     
             if [ "${target}" -nt "${source}" ]; then
