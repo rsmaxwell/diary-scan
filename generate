@@ -249,8 +249,10 @@ classpath="${classpath}:${jacksonDataBindJar}:${jacksonCoreJar}:${jacksonAnnotat
 classpath="${classpath}:${itextpdfJar}:${itextpdfFormsJar}:${itextpdfKernelJar}:${itextpdfIOJar}:${itextpdfLayoutJar}:${itextpdfSvgJar}:${itextpdfStyledXmlParserJar}"
 classpath="${classpath}:${slf4jApiJar}:${slf4jSimpleJar}"
 
+set -x
 java -cp ${classpath} com.rsmaxwell.generator.App --templates ${templatesDir} --output ${outputDir} --year ${year} 1>temp/stdout.txt 2>temp/stderr.txt
 result=$?
+set +x
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
     echo "result: ${result}"
