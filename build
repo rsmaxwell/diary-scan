@@ -252,7 +252,10 @@ done
 for diary in "${dirs[@]}"; do
 
     for fragment in "${root}/${diary}/metadata/fragments"/*; do
-        [ -d "${fragment}" ] || continue
+
+        if [ ! -f "${fragment}/fragment.json" ]; then
+            continue
+        fi
 
         copyFragment "${fragment}"
         result=$?
