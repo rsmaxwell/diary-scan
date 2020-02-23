@@ -296,9 +296,17 @@ for diary in "${dirs[@]}"; do
     for fragment in "${root}/${diary}/metadata/fragments"/*; do
         [ -d "${fragment}" ] || continue
 
+        year=$(jq '.year' output/fragments/${fragment}/fragment.json)
+        result=$?
+        if [ ! ${result} -eq 0 ]; then
+            echo "Error: $0[${LINENO}]"
+            echo "result: ${result}"
+            exit 1
+        fi
+
         # Copy the image fragments
         sourceFragmentDir="${fragment}"
-        targetFragmentsDir="./output/fragments/"
+        targetFragmentsDir="./output/fragments/${year}/"
         copyFragment "${sourceFragmentDir}" "${targetFragmentsDir}"
         result=$?
         if [ ! ${result} -eq 0 ]; then
@@ -339,8 +347,8 @@ done
 #-------------------------------------------
 # Generate the HTML documents from the fragments 
 #-------------------------------------------
-for dir in output/*; do
-    [ -f "${year}" ] || continue
+for dir in output/fragments/*; do
+    [ -f "${dir}" ] || continue
 
     year=$(basename ${dir})
 

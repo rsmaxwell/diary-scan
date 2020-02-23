@@ -18,7 +18,6 @@ task=${tasksBase}/${taskDir}/task
 cat >${task} <<'EOL'
 #!/bin/bash
 
-set -x 
 sudo chown -R www-data:www-data html/
 result=$?
 if [ ! ${result} -eq 0 ]; then
