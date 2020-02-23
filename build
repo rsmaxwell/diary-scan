@@ -26,11 +26,13 @@ function copyFragment() {
         exit 1
     fi
 
-    # Check the target directory exists
-    if [ ! -d "${targetFragmentsDir}" ]; then
+    # Make sure the target directory exists
+    mkdir -p "${targetFragmentDir}"
+    result=$?
+    if [ ! ${result} -eq 0 ]; then
         echo "Error: $0[${LINENO}]"
         echo "result: ${result}"
-        echo "directory not found: ${targetFragmentsDir}"
+        echo "targetFragmentDir: ${targetFragmentDir}"
         exit 1
     fi
 
@@ -38,19 +40,6 @@ function copyFragment() {
     extension="${basename##*.}"
     filename="${basename%.*}"
     targetFragmentDir="${targetFragmentsDir}/${filename}"
-
-    # Copy the sourceFragmentDir dir to the output directory
-    if [ ! -d "${targetFragmentDir}" ]; then
-        echo "updating: ${targetFragmentDir}"
-        mkdir -p "${targetFragmentDir}"
-        result=$?
-        if [ ! ${result} -eq 0 ]; then
-            echo "Error: $0[${LINENO}]"
-            echo "result: ${result}"
-            echo "targetFragmentDir: ${targetFragmentDir}"
-            exit 1
-        fi
-    fi
 
     src="${sourceFragmentDir}/fragment.html"
     trg="${targetFragmentDir}/fragment.html"
