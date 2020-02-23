@@ -4,94 +4,108 @@
 
 function copyFragment() {
 
-    sourceFragmentDir=$1
-    if [ -z "${sourceFragmentDir}" ]; then
+    fragment=$1
+    if [ -z "${fragment}" ]; then
         echo "Error: $0[${LINENO}]"
-        echo "No sourceFragmentDir argument supplied"
+        echo "No fragment argument supplied"
         exit 1
     fi
 
-    targetFragmentsDir=$2
-    if [ -z "${targetFragmentsDir}" ]; then
-        echo "Error: $0[${LINENO}]"
-        echo "No targetFragmentsDir argument supplied"
-        exit 1
-    fi
-
-    # Check the sourceFragmentDir directory exists
-    if [ ! -d "${sourceFragmentDir}" ]; then
+    if [ ! -d "${fragment}" ]; then
         echo "Error: $0[${LINENO}]"
         echo "result: ${result}"
-        echo "directory not found: ${sourceFragmentDir}"
+        echo "dir not found: ${fragment}"
         exit 1
     fi
 
-    # Make sure the target directory exists
-    mkdir -p "${targetFragmentDir}"
+    year=$(jq '.year' "${fragment}/fragment.json")
     result=$?
     if [ ! ${result} -eq 0 ]; then
         echo "Error: $0[${LINENO}]"
         echo "result: ${result}"
-        echo "targetFragmentDir: ${targetFragmentDir}"
+        echo "fragment: ${fragment}"
         exit 1
     fi
 
-    basename=$(basename ${sourceFragmentDir})
-    extension="${basename##*.}"
+    targetFragmentsDir="./output/fragments/${year}/"
+    targetHtmlDir="./output/html/"
+
+    # Make sure the target fragment directory exists
+    mkdir -p "${targetFragmentsDir}"
+    result=$?
+    if [ ! ${result} -eq 0 ]; then
+        echo "Error: $0[${LINENO}]"
+        echo "result: ${result}"
+        echo "targetFragmentsDir: ${targetFragmentsDir}"
+        exit 1
+    fi
+
+    # Make sure the target html exists
+    mkdir -p "${targetHtmlDir}"
+    result=$?
+    if [ ! ${result} -eq 0 ]; then
+        echo "Error: $0[${LINENO}]"
+        echo "result: ${result}"
+        echo "targetHtmlDir: ${targetHtmlDir}"
+        exit 1
+    fi
+
+    basename=$(basename ${fragment})
     filename="${basename%.*}"
-    targetFragmentDir="${targetFragmentsDir}/${filename}"
+    targetFragment="${targetFragmentsDir}/${filename}"
 
-    src="${sourceFragmentDir}/fragment.html"
-    trg="${targetFragmentDir}/fragment.html"
-    if [ "${trg}" -nt "${src}" ]; then
-        : # echo "up-to-date: ${trg}"
-    else
-        echo "updating: ${targetFragmentDir}/fragment.html"
-        cp -r "${src}" "${trg}"
-        result=$?
-        if [ ! ${result} -eq 0 ]; then
-            echo "Error: $0[${LINENO}]"
-            echo "result: ${result}"
-            echo "src: ${src}"
-            echo "trg: ${trg}"
-            exit 1
+    for source in "${fragment}"/*; do
+        [ -f "${fragment}" ] || continue
+
+        basename=$(basename "${source}")
+        extension="${basename##*.}"
+        filename="${basename%.*}"
+
+        if [ ${extension,,} ~= "html|json" ]; then 
+            target="${targetFragment}/${basename}"
+            if [ "${target}" -nt "${source}" ]; then
+                : # echo "up-to-date: ${target}"
+            else
+                echo "updating: ${target}"
+                cp "${source}" "${target}"
+                result=$?
+                if [ ! ${result} -eq 0 ]; then
+                    echo "Error: $0[${LINENO}]"
+                    echo "result: ${result}"
+                    echo "filename: ${filename}"
+                    echo "target:   ${target}"
+                    exit 1
+                fi
+            fi
         fi
-    fi
 
-    src="${sourceFragmentDir}/fragment.json"
-    trg="${targetFragmentDir}/fragment.json"
-    if [ "${trg}" -nt "${src}" ]; then
-        : # echo "up-to-date: ${trg}"
-    else
-        echo "updating: ${targetFragmentDir}/fragment.json"
-        cp -r "${src}" "${trg}"
-        result=$?
-        if [ ! ${result} -eq 0 ]; then
-            echo "Error: $0[${LINENO}]"
-            echo "result: ${result}"
-            echo "src: ${src}"
-            echo "trg: ${trg}"
-            exit 1
+        if [ ${extension,,} ~= "jpg|jpeg|png" ]; then 
+            target="${targetHtmlDir}/images/${basename}"
+    
+            if [ "${target}" -nt "${source}" ]; then
+                : # echo "up-to-date: ${target}"
+            else
+                echo "updating: ${target}"
+                cp "${source}" "${target}"
+                result=$?
+                if [ ! ${result} -eq 0 ]; then
+                    echo "Error: $0[${LINENO}]"
+                    echo "result: ${result}"
+                    echo "filename: ${filename}"
+                    echo "target:   ${target}"
+                    exit 1
+                fi
+            fi
         fi
-    fi
 
-    # Output the dependancies
-    year=$(jq '.year' "${sourceFragmentDir}/fragment.json")
-    result=$?
-    if [ ! ${result} -eq 0 ]; then
-        echo "Error: $0[${LINENO}]"
-        echo "result: ${result}"
-        echo "${stdout}"
-        echo "sourceFragmentDir: ${sourceFragmentDir}"
-        exit 1
-    fi
+    done
 
     makefile="output/temp/${year}.mk"
     if [ ! -f "${makefile}" ]; then
         printf "${year}.html : " > ${makefile}
     fi
-    printf "\\\n    ${targetFragmentDir}/fragment.html" >> ${makefile}
-    printf "\\\n    ${targetFragmentDir}/fragment.json" >> ${makefile}
+    printf "\\\n    ${targetFragment}/fragment.html" >> ${makefile}
+    printf "\\\n    ${targetFragment}/fragment.json" >> ${makefile}
     printf "\\\n    ${imageTarget}" >> ${makefile}
 }
 
@@ -171,11 +185,12 @@ if [ ! ${result} -eq 0 ]; then
 fi
 
 #-------------------------------------------
-# Extract text from the diary word files (*.docx) into html fragments (*.json)
+# Assemble the fragments
 #-------------------------------------------
 for i in "${dirs[@]}"; do
     echo "---[ ${i} ]------------"
 
+    # Extract text from the diary word files (*.docx) into html fragments
     for wordFile in "${root}/${i}/metadata/word"/*.docx; do
 
         basename=$(basename "${wordFile}")
@@ -212,52 +227,6 @@ for i in "${dirs[@]}"; do
             fi
         fi
     done
-
-    # Copy the images and their fragments
-    for file in "${root}/${i}"/*; do
-        [ -f "${file}" ] || continue
-
-        basename=$(basename "${file}")
-
-        regx="^img([0-9]{4})-image-.*\.(jpg|png)$"
-        if [[ ! "${basename}" =~ ${regx} ]]; then
-            continue
-        fi
-
-        # Copy the images to the html images directory
-        imageSource=${file}
-        imageTarget="output/html/images/${basename}"
-        if [ "${imageTarget}" -nt "${imageSource}" ]; then
-            : # echo "up-to-date: ${imageTarget}"
-        else
-            echo "updating: ${imageTarget}"
-            cp "${imageSource}" "${imageTarget}"
-            result=$?
-            if [ ! ${result} -eq 0 ]; then
-                echo "Error: $0[${LINENO}]"
-                echo "result: ${result}"
-                echo "imageSource: ${imageSource}"
-                echo "imageTarget: ${imageTarget}"
-                exit 1
-            fi
-        fi
-
-        extension="${basename##*.}"
-        filename="${basename%.*}"
-
-        # Copy the image fragments
-        sourceFragmentDir="${root}/${i}/metadata/fragments/${filename}"
-        targetFragmentsDir="./output/fragments"
-        copyFragment "${sourceFragmentDir}" "${targetFragmentsDir}"
-        result=$?
-        if [ ! ${result} -eq 0 ]; then
-            echo "Error: $0[${LINENO}]"
-            echo "result: ${result}"
-            echo "sourceFragmentDir: ${sourceFragmentDir}"
-            echo "targetFragmentsDir: ${targetFragmentsDir}"
-            exit 1
-        fi
-    done
 done
 
 # Terminate the dependancy files, and copy
@@ -285,24 +254,12 @@ for diary in "${dirs[@]}"; do
     for fragment in "${root}/${diary}/metadata/fragments"/*; do
         [ -d "${fragment}" ] || continue
 
-        year=$(jq '.year' ${fragment}/fragment.json)
+        copyFragment "${fragment}"
         result=$?
         if [ ! ${result} -eq 0 ]; then
             echo "Error: $0[${LINENO}]"
             echo "result: ${result}"
-            exit 1
-        fi
-
-        # Copy the image fragments
-        sourceFragmentDir="${fragment}"
-        targetFragmentsDir="./output/fragments/${year}/"
-        copyFragment "${sourceFragmentDir}" "${targetFragmentsDir}"
-        result=$?
-        if [ ! ${result} -eq 0 ]; then
-            echo "Error: $0[${LINENO}]"
-            echo "result: ${result}"
-            echo "sourceFragmentDir: ${sourceFragmentDir}"
-            echo "targetFragmentsDir: ${targetFragmentsDir}"
+            echo "fragment: ${fragment}"
             exit 1
         fi
     done
