@@ -27,8 +27,8 @@ function copyFragment() {
         exit 1
     fi
 
-    targetFragmentsDir="./output/fragments/${year}/"
-    targetHtmlDir="./output/html/"
+    targetFragmentsDir="output/fragments/${year}/"
+    targetHtmlDir="output/html/"
 
     # Make sure the target fragment directory exists
     mkdir -p "${targetFragmentsDir}"
@@ -296,6 +296,7 @@ done
 #-------------------------------------------
 # Generate the HTML documents from the fragments 
 #-------------------------------------------
+set -x
 for dir in output/fragments/*; do
     [ -f "${dir}" ] || continue
 
@@ -310,7 +311,7 @@ for dir in output/fragments/*; do
         exit 1
     fi
 done
-
+set +x
 #-------------------------------------------
 # Generate an index.html pointing to the diaries
 #-------------------------------------------
