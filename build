@@ -303,7 +303,7 @@ for dir in output/fragments/*; do
     year=$(basename ${dir})
 
     echo "generating diary for year: ${year}"
-    ./generate input/templates output year
+    ./generate input/templates output ${year}
     result=$?
     if [ ! ${result} -eq 0 ]; then
         echo "Error: $0[${LINENO}]"
