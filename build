@@ -27,6 +27,10 @@ function copyFragment() {
         exit 1
     fi
 
+    if [ ! -d "${targetFragmentsDir}" ]; then
+        echo "Creating ${targetFragmentsDir} for: ${fragment}"
+    fi
+
     targetFragmentsDir="output/fragments/${year}/"
     targetHtmlDir="output/html/"
 
