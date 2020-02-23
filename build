@@ -27,12 +27,13 @@ function copyFragment() {
         exit 1
     fi
 
-    if [ ! -d "${targetFragmentsDir}" ]; then
-        echo "Creating ${targetFragmentsDir} for: ${fragment}"
-    fi
-
     targetFragmentsDir="output/fragments/${year}/"
     targetHtmlDir="output/html/"
+
+    if [ ! -d "${targetFragmentsDir}" ]; then
+        echo "Creating ${targetFragmentsDir} for: ${fragment}"
+        exit 1
+    fi
 
     # Make sure the target fragment directory exists
     mkdir -p "${targetFragmentsDir}"
