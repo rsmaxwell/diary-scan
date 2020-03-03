@@ -211,7 +211,8 @@ for i in "${dirs[@]}"; do
             continue
         fi
 
-        imageFile="pages/${i}/${BASH_REMATCH[1]}.jpg"
+        # imageFile="pages/${i}/${BASH_REMATCH[1]}.jpg"
+        imageFile="${BASH_REMATCH[1]}.jpg"
 
         makefile="output/dependancies/${filename}.mk"
         if [ -f "${makefile}" ]; then
@@ -227,7 +228,7 @@ for i in "${dirs[@]}"; do
             fi
         else
             # Call the 'java' extract program directly
-            ./extract "${wordFile}" "${imageFile}"
+            ./extract "${wordFile}" "${i}" "${imageFile}"
             result=$?
             if [ ! ${result} -eq 0 ]; then
                 echo "Error: $0[${LINENO}]"
