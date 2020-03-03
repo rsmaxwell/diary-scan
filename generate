@@ -44,8 +44,6 @@ if [ ! -d "${targetFragmentsDir}" ]; then
 fi
 
 
-URL="https://server.rsmaxwell.co.uk/cgi-bin/page"
-
 REPOSITORYURL="https://server.rsmaxwell.co.uk/archiva/repository"
 REPOSITORYID="releases"
 REPOSITORY="releases"
@@ -249,8 +247,11 @@ classpath="${classpath}:${jacksonDataBindJar}:${jacksonCoreJar}:${jacksonAnnotat
 classpath="${classpath}:${itextpdfJar}:${itextpdfFormsJar}:${itextpdfKernelJar}:${itextpdfIOJar}:${itextpdfLayoutJar}:${itextpdfSvgJar}:${itextpdfStyledXmlParserJar}"
 classpath="${classpath}:${slf4jApiJar}:${slf4jSimpleJar}"
 
+URL="https://server.rsmaxwell.co.uk/cgi-bin/page"
+set -x
 java -cp ${classpath} com.rsmaxwell.generator.App --url "${URL}" --templates ${templatesDir} --output ${outputDir} --year ${year} 1>temp/stdout.txt 2>temp/stderr.txt
 result=$?
+set +x
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
     echo "result: ${result}"
