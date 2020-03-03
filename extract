@@ -13,13 +13,20 @@ if [ ! -f "${wordFile}" ]; then
     exit 1
 fi
 
+diary=${2}
+if [ -z "${diary}" ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "missing diary argument"
+    exit 1
+fi
 
-imageFile=${2}
+imageFile=${3}
 if [ -z "${imageFile}" ]; then
     echo "Error: $0[${LINENO}]"
     echo "missing imageFile argument"
     exit 1
 fi
+
 
 
 REPOSITORYURL="https://server.rsmaxwell.co.uk/archiva/repository"
@@ -160,7 +167,7 @@ classpath="${classpath}:${apacheCommonsCliJar}:${apacheCommonsTextJar}:${apacheC
 classpath="${classpath}:${jacksonDataBindJar}:${jacksonCoreJar}:${jacksonAnnotationsJar}"
 classpath="${classpath}:${slf4jApiJar}:${slf4jSimpleJar}"
 
-java -cp ${classpath} com.rsmaxwell.extractor.App --word "${wordFile}" --image "${imageFile}" 1>temp/stdout.txt 2>temp/stderr.txt
+java -cp ${classpath} com.rsmaxwell.extractor.App --word "${wordFile}" --diary "${diary}" --image "${imageFile}" 1>temp/stdout.txt 2>temp/stderr.txt
 result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
