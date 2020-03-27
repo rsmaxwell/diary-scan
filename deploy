@@ -10,9 +10,9 @@ taskDir=$(newTask)
 
 
 #########################################################################################
-# Create a task to configure the plain-text site
+# Create a task to configure the site
 #########################################################################################
-echo "Create a task to configure the plain-text site"
+echo "Create a task to configure the site"
 task=${tasksBase}/${taskDir}/task
 
 cat >${task} <<'EOL'
