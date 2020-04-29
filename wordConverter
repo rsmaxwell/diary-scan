@@ -1,0 +1,147 @@
+#!/bin/bash
+
+fragmentDir=$1
+if [ -z "${fragmentDir}" ]; then
+    echo "Missing fragmentDir argument"
+    exit 1
+fi
+
+REPOSITORYURL="https://server.rsmaxwell.co.uk/archiva/repository"
+REPOSITORYID="releases"
+REPOSITORY="releases"
+GROUPID="com.rsmaxwell.diary"
+ARTIFACTID="wordconverter"
+VERSION="0.0.12"
+
+# find the latest version of the wordconverter jar
+stdout=$(./getJar2 "${REPOSITORYURL}" "${REPOSITORYID}" "${REPOSITORY}" "${GROUPID}" "${ARTIFACTID}" "${VERSION}")
+result=$?
+if [ ${result} -eq 0 ]; then
+    wordconverterJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+# get the ApacheCommonsCli Jar
+stdout=$(./getJar "commons-cli" "commons-cli" "1.4")
+result=$?
+if [ ${result} -eq 0 ]; then
+    apacheCommonsCliJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+# get the ApacheCommonsText Jar
+stdout=$(./getJar "org.apache.commons" "commons-text" "1.8")
+result=$?
+if [ ${result} -eq 0 ]; then
+    apacheCommonsTextJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+# get the ApacheCommonsLang3 Jar
+stdout=$(./getJar "org.apache.commons" "commons-lang3" "3.9")
+result=$?
+if [ ${result} -eq 0 ]; then
+    apacheCommonsLang3Jar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+# get the JacksonDatabind Jar
+stdout=$(./getJar "com.fasterxml.jackson.core" "jackson-databind" "2.10.2")
+result=$?
+if [ ${result} -eq 0 ]; then
+    jacksonDataBindJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+# get the JacksonCore Jar
+stdout=$(./getJar "com.fasterxml.jackson.core" "jackson-core" "2.10.2")
+result=$?
+if [ ${result} -eq 0 ]; then
+    jacksonCoreJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+# get the JacksonAnnotations Jar
+stdout=$(./getJar "com.fasterxml.jackson.core" "jackson-annotations" "2.10.2" )
+result=$?
+if [ ${result} -eq 0 ]; then
+    jacksonAnnotationsJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+# get the slf4j-api Jar
+stdout=$(./getJar "org.slf4j" "slf4j-api" "2.0.0-alpha1" )
+result=$?
+if [ ${result} -eq 0 ]; then
+    slf4jApiJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+# get the slf4j-simple Jar
+stdout=$(./getJar "org.slf4j" "slf4j-simple" "2.0.0-alpha1" )
+result=$?
+if [ ${result} -eq 0 ]; then
+    slf4jSimpleJar=${stdout}
+else
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "${stdout}"
+    exit 1
+fi
+
+if [[ "$OSTYPE" == "cygwin" ]]; then
+    SEP=";"
+else
+    SEP=":"
+fi
+
+# Convert the word document into HTML
+classpath="${wordconverterJar}"
+classpath="${classpath}${SEP}${apacheCommonsCliJar}${SEP}${apacheCommonsTextJar}${SEP}${apacheCommonsLang3Jar}"
+classpath="${classpath}${SEP}${jacksonDataBindJar}${SEP}${jacksonCoreJar}${SEP}${jacksonAnnotationsJar}"
+classpath="${classpath}${SEP}${slf4jApiJar}${SEP}${slf4jSimpleJar}"
+
+baseDir="input/fragments"
+
+java -cp ${classpath} com.rsmaxwell.diary.wordconverter.App --base ${baseDir} --fragment ${fragmentDir}
+result=$?
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "baseDir: ${baseDir}"
+    echo "fragmentDir: ${fragmentDir}"
+    exit 1
+fi
+

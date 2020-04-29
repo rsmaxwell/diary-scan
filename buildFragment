@@ -1,0 +1,50 @@
+#!/bin/bash
+
+fragmentDir=$1
+if [ -z "${fragmentDir}" ]; then
+    echo "Missing fragmentDir argument"
+    exit 1
+fi
+fragmentPath="input/fragments/${fragmentDir}"
+
+fragment_html="${fragmentPath}/fragment.html"
+if [ ! -f "${fragment_html}" ]; then
+    echo "Fragment html not found: ${fragment_html}"
+    exit 1
+fi
+
+fragment_json="input/fragments/${fragmentDir}/fragment.json"
+if [ ! -f "${fragment_json}" ]; then
+    echo "Fragment json not found: ${fragment_json}"
+    exit 1
+fi
+
+stylesheet="input/styles/diary.css"
+if [ ! -f "${stylesheet}" ]; then
+    echo "stylesheet not found: ${stylesheet}"
+    exit 1
+fi
+
+document=${fragmentPath}/document.html
+cat > ${document} << EOF
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="../../../../styles/diary.css">
+</head>
+<body>
+EOF
+
+cat ${fragment_html} >> ${document}
+
+cat >> ${document} << EOF
+</body>
+</html>
+EOF
+
+
+
+
+
+
+
+

@@ -162,7 +162,13 @@ EOT
     echo ${VERSION} > ${flag}
 fi
 
-filename=${HOME}/.m2/repository/${GROUPID//.//}/${ARTIFACTID}/${VERSION}/${ARTIFACTID}-${VERSION}.${PACKAGING}
+if [[ "$OSTYPE" == "cygwin" ]]; then
+    MVN_HOME=$(cygpath -u "$USERPROFILE")
+else
+    MVN_HOME=${HOME}
+fi
+
+filename=${MVN_HOME}/.m2/repository/${GROUPID//.//}/${ARTIFACTID}/${VERSION}/${ARTIFACTID}-${VERSION}.${PACKAGING}
 if [ ! -f "${filename}" ]; then
     mvn --batch-mode --log-file ${currentDir}/temp/output.txt dependency:get -DremoteRepositories=${REPOSITORYURL}/${REPOSITORY} -Dartifact=${GROUPID}:${ARTIFACTID}:${VERSION}
     result=$?
@@ -180,6 +186,12 @@ if [ ! -f "${filename}" ]; then
     echo "Error: $0[${LINENO}]"
     echo "file not found: [${filename}]"
     exit 1
+fi
+
+if [[ "$OSTYPE" == "cygwin" ]]; then
+    filename=$(cygpath -w "$filename")
+else
+    filename=${filename}
 fi
 
 echo ${filename}
