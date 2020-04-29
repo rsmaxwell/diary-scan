@@ -27,7 +27,17 @@ function copyFragment() {
         exit 1
     fi
 
-    targetFragmentsDir="output/fragments/${year}"
+    month=$(jq '.month' "${fragment}/fragment.json")
+    result=$?
+    if [ ! ${result} -eq 0 ]; then
+        echo "Error: $0[${LINENO}]"
+        echo "result: ${result}"
+        echo "fragment: ${fragment}"
+        exit 1
+    fi
+
+    month2=$(printf "%02d" ${month})
+    targetFragmentsDir="output/fragments/${year}/${month2}"
     targetHtmlDir="output/html/"
 
     # Make sure the target fragment directory exists
