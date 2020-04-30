@@ -5,7 +5,7 @@ if [ -z "${fragmentDir}" ]; then
     echo "Missing fragmentDir argument"
     exit 1
 fi
-fragmentPath="input/fragments/${fragmentDir}"
+fragmentPath="input/fragments/${fragmentDir//\\//}"
 
 fragment_html="${fragmentPath}/fragment.html"
 if [ ! -f "${fragment_html}" ]; then
