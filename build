@@ -36,6 +36,15 @@ function copyFragment() {
         exit 1
     fi
 
+    day=$(jq '.day' "${fragment}/fragment.json")
+    result=$?
+    if [ ! ${result} -eq 0 ]; then
+        echo "Error: $0[${LINENO}]"
+        echo "result: ${result}"
+        echo "fragment: ${fragment}"
+        exit 1
+    fi
+
     month2=$(printf "%02d" ${month})
     targetFragmentsDir="output/fragments/${year}/${month2}"
     targetHtmlDir="output/html/"
@@ -60,8 +69,9 @@ function copyFragment() {
         exit 1
     fi
 
+    day2=$(printf "%02d" ${day})
     basename=$(basename ${fragment})
-    filename="${basename%.*}"
+    filename="${day2}-${basename%.*}"
     targetFragment="${targetFragmentsDir}/${filename}"
 
     mkdir -p "${targetFragment}"
@@ -73,59 +83,69 @@ function copyFragment() {
         exit 1
     fi
 
-    for source in "${fragment}"/*; do
-        [ ! -f "${fragment}" ] || continue
+    rsync --archive --quiet --exclude '**/@*' --exclude '**/images' ${fragment}/ ${targetFragment}
+    result=$?
+    if [ ! ${result} -eq 0 ]; then
+        echo "Error: $0[${LINENO}]"
+        echo "result: ${result}"
+        echo "targetFragment: ${targetFragment}"
+        exit 1
+    fi
 
-        basename=$(basename "${source}")
-        extension="${basename##*.}"
-        filename="${basename%.*}"
+# doit=true
+# if [ ${year} -ne 1830 ]; then doit=false; fi
+# if [ ${month} -ne 8 ]; then doit=false; fi
+# if [ ${day} -ne 10 ]; then doit=false; fi
+# if [ ${doit} == true ]; then
+#     echo "-----------------------------------------------------------------"
+#     echo ${targetFragment}
+#     tree ${targetFragment}
+#     set -x
+# fi
 
-        if [[ "${extension,,}" =~ html|json ]]; then 
-            target="${targetFragment}/${basename}"
-            if [ "${target}" -nt "${source}" ]; then
-                : # echo "up-to-date: ${target}"
-            else
-                echo "updating: ${target}"
-                cp "${source}" "${target}"
-                result=$?
-                if [ ! ${result} -eq 0 ]; then
-                    echo "Error: $0[${LINENO}]"
-                    echo "result: ${result}"
-                    echo "filename: ${filename}"
-                    echo "target:   ${target}"
-                    exit 1
-                fi
-            fi
+    targetHtmlImages="output/html/images"
+    list="[]"
+    readarray -d '' array < <(find ${fragment} \( -iname "*.jpeg" -or -iname "*.jpg" -or -iname "*.png" \) -print0)
+    for i in "${array[@]}"; do
+        imagename=$(basename ${i})
+
+        if [[ "${i}" == *"/@eaDir/"* ]]; then
+            continue
         fi
 
-        if [[ ${extension,,} =~ jpg|jpeg|png ]]; then 
-            target="${targetHtmlDir}/images/${basename}"
-    
-            if [ "${target}" -nt "${source}" ]; then
-                : # echo "up-to-date: ${target}"
-            else
-                echo "updating: ${target}"
-                cp "${source}" "${target}"
-                result=$?
-                if [ ! ${result} -eq 0 ]; then
-                    echo "Error: $0[${LINENO}]"
-                    echo "result: ${result}"
-                    echo "filename: ${filename}"
-                    echo "target:   ${target}"
-                    exit 1
-                fi
-            fi
+        list=$(echo ${list} | jq --arg name ${imagename} '. += [ $name ]')
+        result=$?
+        if [ ! ${result} -eq 0 ]; then
+            echo "Error: $0[${LINENO}]"
+            echo "result: ${result}"
+            echo "fragment: ${fragment}"
+            exit 1
         fi
 
+        cp ${fragment}/images/${imagename} ${targetHtmlImages}
+        result=$?
+        if [ ! ${result} -eq 0 ]; then
+            echo "Error: $0[${LINENO}]"
+            echo "result: ${result}"
+            exit 1
+        fi
     done
 
-    makefile="output/temp/${year}.mk"
-    if [ ! -f "${makefile}" ]; then
-        printf "${year}.html : " > ${makefile}
+    output=$(jq --argjson groupInfo "${list}" '.images += $groupInfo' "${targetFragment}/fragment.json")
+    result=$?
+    if [ ! ${result} -eq 0 ]; then
+        echo "Error: $0[${LINENO}]"
+        echo "result: ${result}"
+        echo "fragment: ${fragment}"
+        exit 1
     fi
-    printf "\\\n    ${targetFragment}/fragment.html" >> ${makefile}
-    printf "\\\n    ${targetFragment}/fragment.json" >> ${makefile}
-    printf "\\\n    ${imageTarget}" >> ${makefile}
+
+    echo ${output} > "${targetFragment}/fragment.json"
+
+# if [ ${doit} == true ]; then
+#     echo "... exiting ..."
+#     exit 99
+# fi
 }
 
 
@@ -204,72 +224,42 @@ if [ ! ${result} -eq 0 ]; then
 fi
 
 #-------------------------------------------
-# Assemble the fragments
+# Extract fragments from word documents
 #-------------------------------------------
-for i in "${dirs[@]}"; do
-    echo "---[ ${i} ]------------"
-
-    # Extract text from the diary word files (*.docx) into html fragments
-    for wordFile in "${root}/${i}/metadata/word"/*.docx; do
-
-        basename=$(basename "${wordFile}")
-        extension="${basename##*.}"
-        filename="${basename%.*}"
-
-        regex="^(img[0-9]{4})(-(left|right))?\.docx$"
-        if [[ ! "${basename}" =~ ${regex} ]]; then
-            continue
-        fi
-
-        # imageFile="pages/${i}/${BASH_REMATCH[1]}.jpg"
-        imageFile="${BASH_REMATCH[1]}.jpg"
-
-        makefile="output/dependancies/${filename}.mk"
-        if [ -f "${makefile}" ]; then
-
-            # Call 'make' to call the java extract program
-            make --file "${makefile}"
-            result=$?
-            if [ ! ${result} -eq 0 ]; then
-                echo "Error: $0[${LINENO}]"
-                echo "result: ${result}"
-                echo "make --file \"${makefile}\""
-                exit 1
-            fi
-        else
-            # Call the 'java' extract program directly
-            ./extract "${wordFile}" "${i}" "${imageFile}"
-            result=$?
-            if [ ! ${result} -eq 0 ]; then
-                echo "Error: $0[${LINENO}]"
-                echo "result: ${result}"
-                exit 1
-            fi
-        fi
-    done
-done
-
-# Terminate the dependancy files, and copy
-for makefile in "output/temp/"*; do
-    printf "\n" >> ${makefile}
-
-    src="${makefile}"
-    trg="output/dependancies/"
-    cp "${src}" "${trg}"
-    result=$?
-    if [ ! ${result} -eq 0 ]; then
-        echo "Error: $0[${LINENO}]"
-        echo "result: ${result}"
-        echo "src: ${src}"
-        echo "trg: ${trg}"
-        exit 1
-    fi
-done
+# for diary in "${dirs[@]}"; do
+#     echo "---[ from word: ${diary} ]------------------------"
+# 
+#     # Extract text from the diary word files (*.docx) into html fragments
+#     for wordFile in "${root}/${diary}/metadata/word"/*.docx; do
+# 
+#         basename=$(basename "${wordFile}")
+#         extension="${basename##*.}"
+#         filename="${basename%.*}"
+# 
+#         regex="^(img[0-9]{4})(-(left|right))?\.docx$"
+#         if [[ ! "${basename}" =~ ${regex} ]]; then
+#             continue
+#         fi
+# 
+#         # imageFile="pages/${diary}/${BASH_REMATCH[1]}.jpg"
+#         imageFile="${BASH_REMATCH[1]}.jpg"
+# 
+#         # Call the extract program
+#         ./extract "${wordFile}" "${diary}" "${imageFile}"
+#         result=$?
+#         if [ ! ${result} -eq 0 ]; then
+#             echo "Error: $0[${LINENO}]"
+#             echo "result: ${result}"
+#             exit 1
+#         fi
+#     done
+# done
 
 #-------------------------------------------
 # Copy the manually crafted fragments 
 #-------------------------------------------
 for diary in "${dirs[@]}"; do
+    echo "---[ manual: ${diary} ]----------------------------"
 
     for fragment in "${root}/${diary}/metadata/fragments"/*; do
 
