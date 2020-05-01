@@ -18,7 +18,7 @@ function copyFragment() {
         exit 1
     fi
 
-    year=$(jq '.year' "${fragment}/fragment.json")
+    year=$(jq -r '.year' "${fragment}/fragment.json")
     result=$?
     if [ ! ${result} -eq 0 ]; then
         echo "Error: $0[${LINENO}]"
@@ -27,7 +27,7 @@ function copyFragment() {
         exit 1
     fi
 
-    month=$(jq '.month' "${fragment}/fragment.json")
+    month=$(jq -r '.month' "${fragment}/fragment.json")
     result=$?
     if [ ! ${result} -eq 0 ]; then
         echo "Error: $0[${LINENO}]"
@@ -36,7 +36,16 @@ function copyFragment() {
         exit 1
     fi
 
-    day=$(jq '.day' "${fragment}/fragment.json")
+    day=$(jq -r '.day' "${fragment}/fragment.json")
+    result=$?
+    if [ ! ${result} -eq 0 ]; then
+        echo "Error: $0[${LINENO}]"
+        echo "result: ${result}"
+        echo "fragment: ${fragment}"
+        exit 1
+    fi
+
+    order=$(jq -r '.order' "${fragment}/fragment.json")
     result=$?
     if [ ! ${result} -eq 0 ]; then
         echo "Error: $0[${LINENO}]"
@@ -71,7 +80,7 @@ function copyFragment() {
 
     day2=$(printf "%02d" ${day})
     basename=$(basename ${fragment})
-    filename="${day2}-${basename%.*}"
+    filename="${day2}-${order}-${basename%.*}"
     targetFragment="${targetFragmentsDir}/${filename}"
 
     mkdir -p "${targetFragment}"
@@ -177,7 +186,7 @@ if [ ! -d "${root}" ]; then
     exit 1
 fi
 
-rm -rf temp
+rm -rf temp output
 result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
@@ -231,6 +240,8 @@ for diary in "${dirs[@]}"; do
 
     # Extract text from the diary word files (*.docx) into html fragments
     for wordFile in "${root}/${diary}/metadata/word"/*.docx; do
+
+        echo "wordfile: $(basename ${wordFile})"
 
         basename=$(basename "${wordFile}")
         extension="${basename##*.}"
