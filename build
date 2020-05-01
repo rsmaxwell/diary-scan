@@ -226,34 +226,34 @@ fi
 #-------------------------------------------
 # Extract fragments from word documents
 #-------------------------------------------
-# for diary in "${dirs[@]}"; do
-#     echo "---[ from word: ${diary} ]------------------------"
-# 
-#     # Extract text from the diary word files (*.docx) into html fragments
-#     for wordFile in "${root}/${diary}/metadata/word"/*.docx; do
-# 
-#         basename=$(basename "${wordFile}")
-#         extension="${basename##*.}"
-#         filename="${basename%.*}"
-# 
-#         regex="^(img[0-9]{4})(-(left|right))?\.docx$"
-#         if [[ ! "${basename}" =~ ${regex} ]]; then
-#             continue
-#         fi
-# 
-#         # imageFile="pages/${diary}/${BASH_REMATCH[1]}.jpg"
-#         imageFile="${BASH_REMATCH[1]}.jpg"
-# 
-#         # Call the extract program
-#         ./extract "${wordFile}" "${diary}" "${imageFile}"
-#         result=$?
-#         if [ ! ${result} -eq 0 ]; then
-#             echo "Error: $0[${LINENO}]"
-#             echo "result: ${result}"
-#             exit 1
-#         fi
-#     done
-# done
+for diary in "${dirs[@]}"; do
+    echo "---[ from word: ${diary} ]------------------------"
+
+    # Extract text from the diary word files (*.docx) into html fragments
+    for wordFile in "${root}/${diary}/metadata/word"/*.docx; do
+
+        basename=$(basename "${wordFile}")
+        extension="${basename##*.}"
+        filename="${basename%.*}"
+
+        regex="^(img[0-9]{4})(-(left|right))?\.docx$"
+        if [[ ! "${basename}" =~ ${regex} ]]; then
+            continue
+        fi
+
+        # imageFile="pages/${diary}/${BASH_REMATCH[1]}.jpg"
+        imageFile="${BASH_REMATCH[1]}.jpg"
+
+        # Call the extract program
+        ./extract "${wordFile}" "${diary}" "${imageFile}"
+        result=$?
+        if [ ! ${result} -eq 0 ]; then
+            echo "Error: $0[${LINENO}]"
+            echo "result: ${result}"
+            exit 1
+        fi
+    done
+done
 
 #-------------------------------------------
 # Copy the manually crafted fragments 
