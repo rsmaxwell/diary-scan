@@ -249,18 +249,13 @@ classpath="${classpath}:${slf4jApiJar}:${slf4jSimpleJar}"
 
 URL="https://server.rsmaxwell.co.uk/cgi-bin/page"
 
-java -cp ${classpath} com.rsmaxwell.generator.App --url "${URL}" --input ${inputDir} --output ${outputDir} --year ${year} 1>temp/stdout.txt 2>temp/stderr.txt
+java -cp ${classpath} com.rsmaxwell.generator.App --url "${URL}" --input ${inputDir} --output ${outputDir} --year ${year}
 result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
     echo "result: ${result}"
     echo "inputDir: ${inputDir}"
     echo "outputDir:    ${outputDir}"
-    echo "----[ stdout ]--------------------------"
-    cat temp/stdout.txt
-    echo "----[ stderr ]--------------------------"
-    cat temp/stderr.txt
-    echo "----------------------------------------"
     exit 1
 fi
 
