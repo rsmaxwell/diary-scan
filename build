@@ -194,7 +194,7 @@ if [ ! ${result} -eq 0 ]; then
     exit 1
 fi
 
-mkdir -p "output/html/images" "output/html/css" "output/html/scripts" "output/html/controls" "output/fragments" "temp"
+mkdir -p "output/html/images" "output/html/css" "output/html/scripts" "output/html/controls" "temp"
 result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
@@ -202,14 +202,6 @@ if [ ! ${result} -eq 0 ]; then
     exit 1
 fi
 
-
-#-------------------------------------------
-# Export the build timestamp 
-#-------------------------------------------
-export BUILD_DATE=$(date '+%Y-%m-%d %H:%M:%S')
-export BUILD_YEAR=$(date '+%Y')
-export BUILD_MONTH=$(date '+%m')
-export BUILD_DAY=$(date '+%d')
 
 #-------------------------------------------
 # Clear the temporary directory 
@@ -233,41 +225,7 @@ if [ ! ${result} -eq 0 ]; then
 fi
 
 #-------------------------------------------
-# Extract fragments from word documents
-#-------------------------------------------
-for diary in "${dirs[@]}"; do
-    echo "---[ from word: ${diary} ]------------------------"
-
-    # Extract text from the diary word files (*.docx) into html fragments
-    for wordFile in "${root}/${diary}/metadata/word"/*.docx; do
-
-        echo "wordfile: $(basename ${wordFile})"
-
-        basename=$(basename "${wordFile}")
-        extension="${basename##*.}"
-        filename="${basename%.*}"
-
-        regex="^(img[0-9]{4})(-(left|right))?\.docx$"
-        if [[ ! "${basename}" =~ ${regex} ]]; then
-            continue
-        fi
-
-        # imageFile="pages/${diary}/${BASH_REMATCH[1]}.jpg"
-        imageFile="${BASH_REMATCH[1]}.jpg"
-
-        # Call the extract program
-        ./extract "${wordFile}" "${diary}" "${imageFile}"
-        result=$?
-        if [ ! ${result} -eq 0 ]; then
-            echo "Error: $0[${LINENO}]"
-            echo "result: ${result}"
-            exit 1
-        fi
-    done
-done
-
-#-------------------------------------------
-# Copy the manually crafted fragments 
+# Copy the input fragments 
 #-------------------------------------------
 for diary in "${dirs[@]}"; do
     echo "---[ manual: ${diary} ]----------------------------"
@@ -373,7 +331,7 @@ for dir in output/fragments/*; do
     year=$(basename ${dir})
 
     echo "generating diary for year: ${year}"
-    ./generate input/templates output ${year}
+    ./generate input output ${year}
     result=$?
     if [ ! ${result} -eq 0 ]; then
         echo "Error: $0[${LINENO}]"
