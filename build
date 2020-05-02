@@ -259,7 +259,7 @@ for file in input/styles/*; do
     if [ "${target}" -nt "${file}" ]; then
         : # echo "up-to-date: ${target}"
     else
-        echo "updating: ${target}"
+        # echo "updating: ${target}"
         cp "${file}" "${target}"
         result=$?
         if [ ! ${result} -eq 0 ]; then
@@ -284,7 +284,7 @@ for file in input/scripts/*; do
     if [ "${target}" -nt "${file}" ]; then
         : # echo "up-to-date: ${target}"
     else
-        echo "updating: ${target}"
+        # echo "updating: ${target}"
         cp "${file}" "${target}"
         result=$?
         if [ ! ${result} -eq 0 ]; then
@@ -309,7 +309,7 @@ for file in input/controls/*; do
     if [ "${target}" -nt "${file}" ]; then
         : # echo "up-to-date: ${target}"
     else
-        echo "updating: ${target}"
+        # echo "updating: ${target}"
         cp "${file}" "${target}"
         result=$?
         if [ ! ${result} -eq 0 ]; then
