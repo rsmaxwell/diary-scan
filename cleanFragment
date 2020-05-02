@@ -60,67 +60,12 @@ if [ ! -d "${source}" ]; then
 fi
 
 #########################################################################################
-# Copy the image files 
+# Clean temporary files
 #########################################################################################
-jq -e 'has("images")' ${fragment_json} > /dev/null;
-result=$?
-if [ ${result} -eq 0 ]; then
 
-    images=$(jq -r '.images' "${fragment_json}")
-    result=$?
-    if [ ! ${result} -eq 0 ]; then
-        echo "Error: $0[${LINENO}]"
-        echo "result: ${result}"
-        echo "fragment: ${fragment}"
-        exit 1
-    fi
-
-    for row in $(echo "${images}" | jq -r '.[] | @base64'); do
-        _jq() {
-         echo ${row} | base64 --decode | jq -r ${1}
-        }
-
-        filename=$(echo ${row} | base64 --decode)
-        echo "image: ${filename}"
-
-        mkdir -p ${fragmentPath}/images
-        result=$?
-        if [ ! ${result} -eq 0 ]; then
-            echo "Error: $0[${LINENO}]"
-            echo "result: ${result}"
-            echo "fragment: ${fragment}"
-            exit 1
-        fi
-
-        find ${source} -name ${filename} -exec cp {} ${fragmentPath}/images \;
-        result=$?
-        if [ ! ${result} -eq 0 ]; then
-            echo "Error: $0[${LINENO}]"
-            echo "result: ${result}"
-            echo "fragment: ${fragment}"
-            exit 1
-        fi
-    done
-fi
-
-
-document=${fragmentPath}/document.html
-cat > ${document} << EOF
-<html>
-<head>
-<link rel="stylesheet" type="text/css" href="../../../../styles/diary.css">
-</head>
-<body>
-EOF
-
-cat ${fragment_html} >> ${document}
-
-cat >> ${document} << EOF
-</body>
-</html>
-EOF
-
-
+rm -rf input/fragments/${fragmentDir}/document
+rm -rf input/fragments/${fragmentDir}/document_files
+rm -rf input/fragments/${fragmentDir}/document.*
 
 
 
