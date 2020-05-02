@@ -1,15 +1,15 @@
 #!/bin/bash
 
-templatesDir=${1}
-if [ -z "${templatesDir}" ]; then
+inputDir=${1}
+if [ -z "${inputDir}" ]; then
     echo "Error: $0[${LINENO}]"
-    echo "missing templates argument"
+    echo "missing input argument"
     exit 1
 fi
 
-if [ ! -d "${templatesDir}" ]; then
+if [ ! -d "${inputDir}" ]; then
     echo "Error: $0[${LINENO}]"
-    echo "dir not found: \"${templatesDir}\""
+    echo "dir not found: \"${inputDir}\""
     exit 1
 fi
 
@@ -249,12 +249,12 @@ classpath="${classpath}:${slf4jApiJar}:${slf4jSimpleJar}"
 
 URL="https://server.rsmaxwell.co.uk/cgi-bin/page"
 
-java -cp ${classpath} com.rsmaxwell.generator.App --url "${URL}" --templates ${templatesDir} --output ${outputDir} --year ${year} 1>temp/stdout.txt 2>temp/stderr.txt
+java -cp ${classpath} com.rsmaxwell.generator.App --url "${URL}" --input ${inputDir} --output ${outputDir} --year ${year} 1>temp/stdout.txt 2>temp/stderr.txt
 result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
     echo "result: ${result}"
-    echo "templatesDir: ${templatesDir}"
+    echo "inputDir: ${inputDir}"
     echo "outputDir:    ${outputDir}"
     echo "----[ stdout ]--------------------------"
     cat temp/stdout.txt
