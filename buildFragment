@@ -25,6 +25,85 @@ if [ ! -f "${stylesheet}" ]; then
     exit 1
 fi
 
+configfile="${HOME}/diary.json"
+if [ ! -f "${configfile}" ]; then
+    echo "configfile not found: ${configfile}"
+    exit 1
+fi
+
+#########################################################################################
+# Read configuration
+#########################################################################################
+
+root=$(jq -r '.root' ${configfile})
+result=$?
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "fragment: ${fragment}"
+    exit 1
+fi
+
+diary=$(jq -r '.diary' ${fragment_json})
+result=$?
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "fragment: ${fragment}"
+    exit 1
+fi
+
+source="${root}/${diary}/metadata/fragments"
+if [ ! -d "${source}" ]; then
+    echo "directory not found: ${source}"
+    exit 1
+fi
+
+#########################################################################################
+# Copy the image files 
+#########################################################################################
+jq -e 'has("images")' ${fragment_json} > /dev/null;
+result=$?
+if [ ${result} -eq 0 ]; then
+
+    images=$(jq -r '.images' "${fragment_json}")
+    result=$?
+    if [ ! ${result} -eq 0 ]; then
+        echo "Error: $0[${LINENO}]"
+        echo "result: ${result}"
+        echo "fragment: ${fragment}"
+        exit 1
+    fi
+
+    for row in $(echo "${images}" | jq -r '.[] | @base64'); do
+        _jq() {
+         echo ${row} | base64 --decode | jq -r ${1}
+        }
+
+        filename=$(echo ${row} | base64 --decode)
+        echo "image: ${filename}"
+
+        mkdir ${fragmentPath}/images
+        result=$?
+        if [ ! ${result} -eq 0 ]; then
+            echo "Error: $0[${LINENO}]"
+            echo "result: ${result}"
+            echo "fragment: ${fragment}"
+            exit 1
+        fi
+
+        find ${source} -name ${filename} -exec cp {} ${fragmentPath}/images \;
+        result=$?
+        if [ ! ${result} -eq 0 ]; then
+            echo "Error: $0[${LINENO}]"
+            echo "result: ${result}"
+            echo "fragment: ${fragment}"
+            exit 1
+        fi
+    done
+fi
+
+
 document=${fragmentPath}/document.html
 cat > ${document} << EOF
 <html>
