@@ -1,1 +1,11 @@
-{ "year": 1830, "month": 6, "day": 23, "order": "b1", "notes": "pubs, inns and landmarks", "images": [ "img2381-image-map.jpg" ] }
+{
+  "year": 1830,
+  "month": 6,
+  "day": 23,
+  "order": "b1",
+  "imageFilename": null,
+  "diary": null,
+  "images": [
+    "img2381-image-map.jpg"
+  ]
+}

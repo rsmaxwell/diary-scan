@@ -1,10 +1,9 @@
 {
-  "year" : 1829,
-  "month" : 5,
-  "day" : 3,
-  "order" : "img2880-right",
-  "wordFilename" : "/media/NAS/photo/documents/sea-captains-chest/diary-1828-and-1829-and-jan-1830/metadata/word/img2880-right.docx",
-  "imageFilename" : "img2880.jpg",
-  "diary" : "diary-1828-and-1829-and-jan-1830",
-  "images" : null
+  "year": 1829,
+  "month": 5,
+  "day": 3,
+  "order": "img2880-right",
+  "imageFilename": "img2880.jpg",
+  "diary": "diary-1828-and-1829-and-jan-1830",
+  "images": []
 }

@@ -1,10 +1,9 @@
 {
-  "year" : 1830,
-  "month" : 3,
-  "day" : 12,
-  "order" : "img2358",
-  "wordFilename" : "/media/NAS/photo/documents/sea-captains-chest/diary-1830/metadata/word/img2358.docx",
-  "imageFilename" : "img2358.jpg",
-  "diary" : "diary-1830",
-  "images" : null
+  "year": 1830,
+  "month": 3,
+  "day": 12,
+  "order": "img2358",
+  "imageFilename": "img2358.jpg",
+  "diary": "diary-1830",
+  "images": []
 }

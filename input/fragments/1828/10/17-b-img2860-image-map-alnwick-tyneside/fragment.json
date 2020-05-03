@@ -1,1 +1,11 @@
-{ "year": 1828, "month": 10, "day": 17, "order": "b", "notes": "Map of Togston", "images": [ "img2860-image-map-alnwick-tyneside.jpg" ] }
+{
+  "year": 1828,
+  "month": 10,
+  "day": 17,
+  "order": "b",
+  "imageFilename": null,
+  "diary": null,
+  "images": [
+    "img2860-image-map-alnwick-tyneside.jpg"
+  ]
+}

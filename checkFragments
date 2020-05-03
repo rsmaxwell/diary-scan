@@ -1,0 +1,46 @@
+#!/bin/bash
+
+input_fragments="input/fragments"
+if [ ! -d "${input_fragments}" ]; then
+    echo "directory not found ${input_fragments}"
+    exit 1
+fi
+
+list="[]"
+readarray -d '' array < <(find ${input_fragments} -name "fragment.json" -print0)
+for i in "${array[@]}"; do
+    jsonfile=${i}
+
+    # Whitelist the fields
+    json1=$(jq -r '. | {year: .year, month: .month, day: .day, order: .order, imageFilename: .imageFilename, diary: .diary, images: .images}' ${jsonfile})
+    result=$?
+    if [ ! ${result} -eq 0 ]; then
+        echo "Error: $0[${LINENO}]"
+        echo "result: ${result}"
+        exit 1
+    fi
+
+    # If 'images' is missing or null, replace it with '[]' 
+    images=$(echo ${json1} | jq -r '.images')
+    result=$?
+    if [ ! ${result} -eq 0 ]; then
+        echo "Error: $0[${LINENO}]"
+        echo "result: ${result}"
+        exit 1
+    fi
+
+    if [ "${images}" == null ]; then
+        json2=$(echo ${json1} | jq '.images = []')
+    else
+        json2=${json1}
+    fi
+
+    # Format the result
+    echo ${json2} | jq . > ${jsonfile}
+    result=$?
+    if [ ! ${result} -eq 0 ]; then
+        echo "Error: $0[${LINENO}]"
+        echo "result: ${result}"
+        exit 1
+    fi
+done

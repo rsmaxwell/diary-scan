@@ -1,1 +1,12 @@
-{ "year": 1829, "month": 7, "day": 7, "order": "b3", "images": [ "original-st-petersburg-map-large.png", "img2900-image-st-petersburg-map-large.png" ] }
+{
+  "year": 1829,
+  "month": 7,
+  "day": 7,
+  "order": "b3",
+  "imageFilename": null,
+  "diary": null,
+  "images": [
+    "original-st-petersburg-map-large.png",
+    "img2900-image-st-petersburg-map-large.png"
+  ]
+}

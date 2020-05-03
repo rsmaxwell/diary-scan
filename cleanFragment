@@ -34,7 +34,6 @@ fi
 #########################################################################################
 # Read configuration
 #########################################################################################
-
 root=$(jq -r '.root' ${configfile})
 result=$?
 if [ ! ${result} -eq 0 ]; then
@@ -60,12 +59,12 @@ if [ ! -d "${source}" ]; then
 fi
 
 #########################################################################################
-# Clean temporary files
+# Remove working files
 #########################################################################################
-
 rm -rf input/fragments/${fragmentDir}/document
 rm -rf input/fragments/${fragmentDir}/document_files
 rm -rf input/fragments/${fragmentDir}/document.*
+rm -rf input/fragments/${fragmentDir}/images
 
 
 

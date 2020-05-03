@@ -1,1 +1,11 @@
-{ "year": 1828, "month": 4, "day": 17, "order": "b2", "notes": "Clogrennane House", "images": [ "img2842-image-clogrennane-house.jpg" ] }
+{
+  "year": 1828,
+  "month": 4,
+  "day": 17,
+  "order": "b2",
+  "imageFilename": null,
+  "diary": null,
+  "images": [
+    "img2842-image-clogrennane-house.jpg"
+  ]
+}

@@ -1,1 +1,11 @@
-{ "year": 1828, "month": 8, "day": 30, "order": "b1", "notes": "Appuldurcombe House", "images": [ "img2855-image-appuldurcombe-house.jpg" ] }
+{
+  "year": 1828,
+  "month": 8,
+  "day": 30,
+  "order": "b1",
+  "imageFilename": null,
+  "diary": null,
+  "images": [
+    "img2855-image-appuldurcombe-house.jpg"
+  ]
+}

@@ -1,1 +1,11 @@
-{ "year": 1829, "month": 9, "day": 5, "order": "b1", "images": [ "img2920-image-map-london.png" ] }
+{
+  "year": 1829,
+  "month": 9,
+  "day": 5,
+  "order": "b1",
+  "imageFilename": null,
+  "diary": null,
+  "images": [
+    "img2920-image-map-london.png"
+  ]
+}

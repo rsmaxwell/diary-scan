@@ -1,1 +1,9 @@
-{ "year": 1828, "month": 1, "day": 1, "order": "do", "images": [] }
+{
+  "year": 1828,
+  "month": 1,
+  "day": 1,
+  "order": "do",
+  "imageFilename": null,
+  "diary": null,
+  "images": []
+}

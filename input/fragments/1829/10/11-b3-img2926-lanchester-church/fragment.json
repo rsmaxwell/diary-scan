@@ -1,1 +1,11 @@
-{ "year": 1829, "month": 10, "day": 11, "order": "b3", "images": [ "img2926-lanchester-church.jpg" ] }
+{
+  "year": 1829,
+  "month": 10,
+  "day": 11,
+  "order": "b3",
+  "imageFilename": null,
+  "diary": null,
+  "images": [
+    "img2926-lanchester-church.jpg"
+  ]
+}

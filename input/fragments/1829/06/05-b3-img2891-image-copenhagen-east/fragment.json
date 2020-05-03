@@ -1,1 +1,11 @@
-{ "year": 1829, "month": 6, "day": 5, "order": "b3", "images": [ "img2891-image-copenhagen-east.png" ] }
+{
+  "year": 1829,
+  "month": 6,
+  "day": 5,
+  "order": "b3",
+  "imageFilename": null,
+  "diary": null,
+  "images": [
+    "img2891-image-copenhagen-east.png"
+  ]
+}

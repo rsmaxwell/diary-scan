@@ -1,1 +1,11 @@
-{ "year": 1830, "month": 8, "day": 10, "order": "b2", "notes": "Bullring", "images": [ "img2390-image-bullring.png" ] }
+{
+  "year": 1830,
+  "month": 8,
+  "day": 10,
+  "order": "b2",
+  "imageFilename": null,
+  "diary": null,
+  "images": [
+    "img2390-image-bullring.png"
+  ]
+}

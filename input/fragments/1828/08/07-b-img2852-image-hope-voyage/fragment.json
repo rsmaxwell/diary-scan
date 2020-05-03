@@ -1,1 +1,11 @@
-{ "year": 1828, "month": 8, "day": 7, "order": "b", "notes": "The voyage the ship Hope made to London", "images": [ "img2852-image-hope-voyage.jpg" ] }
+{
+  "year": 1828,
+  "month": 8,
+  "day": 7,
+  "order": "b",
+  "imageFilename": null,
+  "diary": null,
+  "images": [
+    "img2852-image-hope-voyage.jpg"
+  ]
+}

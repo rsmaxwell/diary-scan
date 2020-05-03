@@ -1,1 +1,11 @@
-{ "year": 1828, "month": 4, "day": 17, "order": "b3", "notes": "Carlow", "images": [ "img2842-image-map-carlow.jpg" ] }
+{
+  "year": 1828,
+  "month": 4,
+  "day": 17,
+  "order": "b3",
+  "imageFilename": null,
+  "diary": null,
+  "images": [
+    "img2842-image-map-carlow.jpg"
+  ]
+}

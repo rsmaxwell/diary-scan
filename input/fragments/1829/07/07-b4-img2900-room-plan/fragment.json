@@ -1,1 +1,11 @@
-{ "year": 1829, "month": 7, "day": 7, "order": "b4", "images": [ "img2900-image-room-plan.png" ] }
+{
+  "year": 1829,
+  "month": 7,
+  "day": 7,
+  "order": "b4",
+  "imageFilename": null,
+  "diary": null,
+  "images": [
+    "img2900-image-room-plan.png"
+  ]
+}

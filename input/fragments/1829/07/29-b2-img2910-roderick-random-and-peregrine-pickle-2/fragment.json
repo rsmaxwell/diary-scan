@@ -1,1 +1,11 @@
-{ "year": 1829, "month": 7, "day": 29, "order": "b2", "images": [ "img2910-peregrine-pickle-1st-edition.png" ] }
+{
+  "year": 1829,
+  "month": 7,
+  "day": 29,
+  "order": "b2",
+  "imageFilename": null,
+  "diary": null,
+  "images": [
+    "img2910-peregrine-pickle-1st-edition.png"
+  ]
+}
