@@ -61,10 +61,13 @@ fi
 #########################################################################################
 # Copy the image files 
 #########################################################################################
+copyImages=true
+
 jq -e 'has("images")' ${fragment_json} > /dev/null;
 result=$?
-if [ ${result} -eq 0 ]; then
-
+if [ ${result} -ne 0 ]; then
+    copyImages=false
+else
     images=$(jq -r '.images' "${fragment_json}")
     result=$?
     if [ ! ${result} -eq 0 ]; then
@@ -73,6 +76,13 @@ if [ ${result} -eq 0 ]; then
         echo "fragment: ${fragment}"
         exit 1
     fi
+
+    if [ ${images} == null ]; then
+        copyImages=false
+    fi
+fi
+
+if [ ${copyImages} == true ]; then
 
     for row in $(echo "${images}" | jq -r '.[] | @base64'); do
         _jq() {
