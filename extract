@@ -1,15 +1,15 @@
 #!/bin/bash
 
-wordFile=${1}
-if [ -z "${wordFile}" ]; then
+rootDir=${1}
+if [ -z "${rootDir}" ]; then
     echo "Error: $0[${LINENO}]"
-    echo "missing wordFile argument"
+    echo "missing rootDir argument"
     exit 1
 fi
 
-if [ ! -f "${wordFile}" ]; then
+if [ ! -d "${rootDir}" ]; then
     echo "Error: $0[${LINENO}]"
-    echo "file not found: \"${wordFile}\""
+    echo "directory not found: \"${rootDir}\""
     exit 1
 fi
 
@@ -20,7 +20,14 @@ if [ -z "${diary}" ]; then
     exit 1
 fi
 
-imageFile=${3}
+word=${3}
+if [ -z "${word}" ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "missing word argument"
+    exit 1
+fi
+
+imageFile=${4}
 if [ -z "${imageFile}" ]; then
     echo "Error: $0[${LINENO}]"
     echo "missing imageFile argument"
@@ -159,27 +166,38 @@ else
 fi
 
 
-#-------------------------------------------
-# Extract html fragments from the word file
-#-------------------------------------------
-classpath="${extractorJar}:${diaryjsonJar}"
-classpath="${classpath}:${apacheCommonsCliJar}:${apacheCommonsTextJar}:${apacheCommonsLang3Jar}"
-classpath="${classpath}:${jacksonDataBindJar}:${jacksonCoreJar}:${jacksonAnnotationsJar}"
-classpath="${classpath}:${slf4jApiJar}:${slf4jSimpleJar}"
 
-java -cp ${classpath} com.rsmaxwell.extractor.App --word "${wordFile}" --diary "${diary}" --image "${imageFile}" 1>temp/stdout.txt 2>temp/stderr.txt
+# Extract html fragments from the word file
+
+if [[ "$OSTYPE" == "cygwin" ]]; then
+    SEP=";"
+    rootDirJava=$(cygpath -w "${rootDir}")
+else
+    SEP=":"
+    rootDirJava=${rootDir}
+fi
+
+classpath="${extractorJar}${SEP}${diaryjsonJar}"
+classpath="${classpath}${SEP}${apacheCommonsCliJar}${SEP}${apacheCommonsTextJar}${SEP}${apacheCommonsLang3Jar}"
+classpath="${classpath}${SEP}${jacksonDataBindJar}${SEP}${jacksonCoreJar}${SEP}${jacksonAnnotationsJar}"
+classpath="${classpath}${SEP}${slf4jApiJar}${SEP}${slf4jSimpleJar}"
+
+java -cp ${classpath} com.rsmaxwell.extractor.App --root "${rootDirJava}" --diary "${diary}" --word "${word}" --image "${imageFile}"
 result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
     echo "result: ${result}"
-    echo "wordFile: ${wordFile}"
-    echo "----[ stdout ]--------------------------"
-    cat temp/stdout.txt
-    echo "----[ stderr ]--------------------------"
-    cat temp/stderr.txt
-    echo "----------------------------------------"
-    echo "classpath: ${classpath}"
+    echo "rootDir: ${rootDir}"
+    echo "rootDirJava: ${rootDirJava}"
+    echo "diary: ${diary}"
+    echo "imageFile: ${imageFile}"
     exit 1
 fi
 
-
+cp -r output/fragments input
+result=$?
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    exit 1
+fi

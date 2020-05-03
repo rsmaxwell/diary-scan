@@ -239,13 +239,19 @@ fi
 
 
 
-# generate PDF diaries from the day files (*.json)
+# Generate the HTML document from the fragments
 
-classpath="${generatorJar}:${diaryjsonJar}"
-classpath="${classpath}:${apacheCommonsCliJar}"
-classpath="${classpath}:${jacksonDataBindJar}:${jacksonCoreJar}:${jacksonAnnotationsJar}"
-classpath="${classpath}:${itextpdfJar}:${itextpdfFormsJar}:${itextpdfKernelJar}:${itextpdfIOJar}:${itextpdfLayoutJar}:${itextpdfSvgJar}:${itextpdfStyledXmlParserJar}"
-classpath="${classpath}:${slf4jApiJar}:${slf4jSimpleJar}"
+if [[ "$OSTYPE" == "cygwin" ]]; then
+    SEP=";"
+else
+    SEP=":"
+fi
+
+classpath="${generatorJar}${SEP}${diaryjsonJar}"
+classpath="${classpath}${SEP}${apacheCommonsCliJar}"
+classpath="${classpath}${SEP}${jacksonDataBindJar}${SEP}${jacksonCoreJar}${SEP}${jacksonAnnotationsJar}"
+classpath="${classpath}${SEP}${itextpdfJar}${SEP}${itextpdfFormsJar}${SEP}${itextpdfKernelJar}${SEP}${itextpdfIOJar}${SEP}${itextpdfLayoutJar}${SEP}${itextpdfSvgJar}${SEP}${itextpdfStyledXmlParserJar}"
+classpath="${classpath}${SEP}${slf4jApiJar}${SEP}${slf4jSimpleJar}"
 
 URL="https://server.rsmaxwell.co.uk/cgi-bin/page"
 
