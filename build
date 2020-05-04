@@ -9,7 +9,7 @@ fi
 #-------------------------------------------
 # Check, clear and make directories 
 #-------------------------------------------
-rm -rf temp output
+rm -rf output/fragments output/html output/working
 result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
@@ -17,11 +17,24 @@ if [ ! ${result} -eq 0 ]; then
     exit 1
 fi
 
-mkdir -p "output/html/images" "output/html/css" "output/html/scripts" "output/html/controls"
+mkdir -p "output"
 result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
     echo "result: ${result}"
+    exit 1
+fi
+
+#-------------------------------------------
+# Copy the html elements (styles, scripts & control images)
+#-------------------------------------------
+cp "input/html" "output"
+result=$?
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "file: ${file}"
+    echo "target: ${target}"
     exit 1
 fi
 
@@ -73,19 +86,6 @@ for diary in "${dirs[@]}"; do
         fi
     done
 done
-
-#-------------------------------------------
-# Copy the html elements (styles, scripts & control images)
-#-------------------------------------------
-cp "input/html" "output"
-result=$?
-if [ ! ${result} -eq 0 ]; then
-    echo "Error: $0[${LINENO}]"
-    echo "result: ${result}"
-    echo "file: ${file}"
-    echo "target: ${target}"
-    exit 1
-fi
 
 #-------------------------------------------
 # Generate the HTML documents from the fragments 
