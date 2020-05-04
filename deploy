@@ -18,6 +18,13 @@ task=${tasksBase}/${taskDir}/task
 cat >${task} <<'EOL'
 #!/bin/bash
 
+sudo ufw allow 39263
+result=$?
+if [ ! ${result} == 0 ]; then
+    echo "result = ${result}"
+    exit 1
+fi
+
 sudo chown -R www-data:www-data html/
 result=$?
 if [ ! ${result} -eq 0 ]; then
@@ -38,6 +45,13 @@ sudo rsync -avh --delete --exclude pages html/ /srv/httpd/htdocs/diaries
 result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
+    echo "result = ${result}"
+    exit 1
+fi
+
+sudo ufw limit 39263
+result=$?
+if [ ! ${result} == 0 ]; then
     echo "result = ${result}"
     exit 1
 fi
