@@ -7,6 +7,53 @@ if [ -z "${word}" ]; then
     exit 1
 fi
 
+fragmentsDir="input/fragments"
+if [ ! -d "${fragmentsDir}" ]; then
+    echo "directory not found: ${fragmentsDir}"
+    exit 1
+fi
+
+root=$(jq -r '.root' "${HOME}/diary.json")
+result=$?
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    exit 1
+fi
+
+diary=$(jq -r '.diary' "${HOME}/diary.json")
+result=$?
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    exit 1
+fi
+
+wordFile="${root}/${diary}/metadata/word/${word}"
+if [ ! -f "${wordFile}" ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "file not found: ${wordFile}"
+    exit 1
+fi
+
+regex="img([0-9]{4})(-(left|right))?.docx"
+if [[ ! "${word}" =~ ${regex} ]]; then
+    echo "Error: $0[${LINENO}]"
+    echo "wordfilename does not match pattern: ${word}"
+    exit 1
+fi
+
+number="${BASH_REMATCH[1]}"
+image="img${number}.jpg"
+imageFile="${root}/${diary}/${image}"
+if [ ! -f "${imageFile}" ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "file not found: ${imageFile}"
+    exit 1
+fi
+
+
+
 REPOSITORYURL="https://server.rsmaxwell.co.uk/archiva/repository"
 REPOSITORYID="releases"
 REPOSITORY="releases"
@@ -136,46 +183,6 @@ else
     exit 1
 fi
 
-
-root=$(jq -r '.root' "${HOME}/diary.json")
-result=$?
-if [ ! ${result} -eq 0 ]; then
-    echo "Error: $0[${LINENO}]"
-    echo "result: ${result}"
-    exit 1
-fi
-
-diary=$(jq -r '.diary' "${HOME}/diary.json")
-result=$?
-if [ ! ${result} -eq 0 ]; then
-    echo "Error: $0[${LINENO}]"
-    echo "result: ${result}"
-    exit 1
-fi
-
-wordFile="${root}/${diary}/metadata/word/${word}"
-if [ ! -f "${wordFile}" ]; then
-    echo "Error: $0[${LINENO}]"
-    echo "file not found: ${wordFile}"
-    exit 1
-fi
-
-regex="img([0-9]{4})(-(left|right))?.docx"
-if [[ ! "${word}" =~ ${regex} ]]; then
-    echo "Error: $0[${LINENO}]"
-    echo "wordfilename does not match pattern: ${word}"
-    exit 1
-fi
-
-number="${BASH_REMATCH[1]}"
-image="img${number}.jpg"
-imageFile="${root}/${diary}/${image}"
-if [ ! -f "${imageFile}" ]; then
-    echo "Error: $0[${LINENO}]"
-    echo "file not found: ${imageFile}"
-    exit 1
-fi
-
 # Extract html fragments from the word file
 
 if [[ "$OSTYPE" == "cygwin" ]]; then
@@ -186,17 +193,18 @@ else
     rootJava=${root}
 fi
 
-echo "root:  ${root}"
-echo "diary: ${diary}"
-echo "word:  ${word}"
-echo "image: ${image}"
+echo "root:   ${root}"
+echo "diary:  ${diary}"
+echo "word:   ${word}"
+echo "image:  ${image}"
+echo "output: output"
 
 classpath="${extractorJar}${SEP}${diaryjsonJar}"
 classpath="${classpath}${SEP}${apacheCommonsCliJar}${SEP}${apacheCommonsTextJar}${SEP}${apacheCommonsLang3Jar}"
 classpath="${classpath}${SEP}${jacksonDataBindJar}${SEP}${jacksonCoreJar}${SEP}${jacksonAnnotationsJar}"
 classpath="${classpath}${SEP}${slf4jApiJar}${SEP}${slf4jSimpleJar}"
 
-java -cp ${classpath} com.rsmaxwell.extractor.App --root "${rootJava}" --diary "${diary}" --word "${word}" --image "${image}"
+java -cp ${classpath} com.rsmaxwell.extractor.App --root "${rootJava}" --diary "${diary}" --word "${word}" --image "${image}" --output "output"
 result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
