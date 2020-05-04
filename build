@@ -28,7 +28,7 @@ fi
 #-------------------------------------------
 # Copy the html elements (styles, scripts & control images)
 #-------------------------------------------
-cp "input/html" "output"
+cp -r "input/html" "output"
 result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
