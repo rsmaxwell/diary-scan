@@ -65,7 +65,7 @@ dirs+=('diary-1839')
 #-------------------------------------------
 
 for diary in "${dirs[@]}"; do
-    echo "---[ manual: ${diary} ]----------------------------"
+    echo "---[ ${diary} ]----------------------------"
 
     sourceDir="${root}/${diary}/metadata/images"
 
