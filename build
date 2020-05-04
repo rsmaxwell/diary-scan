@@ -83,6 +83,8 @@ function copyFragment() {
     filename="${day2}-${order}-${basename%.*}"
     targetFragment="${targetFragmentsDir}/${filename}"
 
+    echo "making targetFragment: ${targetFragment}"
+
     mkdir -p "${targetFragment}"
     result=$?
     if [ ! ${result} -eq 0 ]; then
@@ -355,6 +357,7 @@ cat << EOF > output/html/index.html
     <li><a href="1828.html">1828</a><br>
     <li><a href="1829.html">1829</a><br>
     <li><a href="1830.html">1830</a><br>
+    <li><a href="1831.html">1831</a><br>
     <li><a href="1832.html">1832</a><br>
 </ul>
 
