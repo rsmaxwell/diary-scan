@@ -26,18 +26,6 @@ if [ ! ${result} -eq 0 ]; then
 fi
 
 #-------------------------------------------
-# Copy the fragments
-#-------------------------------------------
-cp -r input/fragments/ output
-result=$?
-if [ ! ${result} -eq 0 ]; then
-    echo "Error: $0[${LINENO}]"
-    echo "result: ${result}"
-    echo "make --file \"${makefile}\""
-    exit 1
-fi
-
-#-------------------------------------------
 # Copy the images
 #-------------------------------------------
 root="/media/NAS/photo/documents/sea-captains-chest"
@@ -87,53 +75,17 @@ for diary in "${dirs[@]}"; do
 done
 
 #-------------------------------------------
-# Copy the styles (*.css)
+# Copy the html elements (styles, scripts & control images)
 #-------------------------------------------
-for file in input/styles/*; do
-    [ -f "${file}" ] || continue
-
-    cp "${file}" "output/html/css/"
-    result=$?
-    if [ ! ${result} -eq 0 ]; then
-        echo "Error: $0[${LINENO}]"
-        echo "result: ${result}"
-        echo "file: ${file}"
-        echo "target: ${target}"
-        exit 1
-    fi
-done
-
-#-------------------------------------------
-# Copy the scripts (*.js)
-#-------------------------------------------
-for file in input/scripts/*; do
-    [ -f "${file}" ] || continue
-
-    cp "${file}" "output/html/scripts/"
-    result=$?
-    if [ ! ${result} -eq 0 ]; then
-        echo "Error: $0[${LINENO}]"
-        echo "result: ${result}"
-        echo "file: ${file}"
-        exit 1
-    fi
-done
-
-#-------------------------------------------
-# Copy the control images
-#-------------------------------------------
-for file in input/controls/*; do
-    [ -f "${file}" ] || continue
-
-    cp "${file}" "output/html/controls/"
-    result=$?
-    if [ ! ${result} -eq 0 ]; then
-        echo "Error: $0[${LINENO}]"
-        echo "result: ${result}"
-        echo "file: ${file}"
-        exit 1
-    fi
-done
+cp "input/html" "output"
+result=$?
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "file: ${file}"
+    echo "target: ${target}"
+    exit 1
+fi
 
 #-------------------------------------------
 # Generate the HTML documents from the fragments 
