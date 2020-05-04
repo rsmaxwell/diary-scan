@@ -1,171 +1,51 @@
 #!/bin/bash
 
+input_fragments="input/fragments"
+if [ ! -d "${input_fragments}" ]; then
+    echo "directory not found ${input_fragments}"
+    exit 1
+fi
 
+#-------------------------------------------
+# Check, clear and make directories 
+#-------------------------------------------
+rm -rf temp output
+result=$?
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    exit 1
+fi
 
-function copyFragment() {
+mkdir -p "output/html/images" "output/html/css" "output/html/scripts" "output/html/controls"
+result=$?
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    exit 1
+fi
 
-    fragment=$1
-    if [ -z "${fragment}" ]; then
-        echo "Error: $0[${LINENO}]"
-        echo "No fragment argument supplied"
-        exit 1
-    fi
+#-------------------------------------------
+# Copy the fragments
+#-------------------------------------------
+cp -r input/fragments/ output
+result=$?
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "make --file \"${makefile}\""
+    exit 1
+fi
 
-    if [ ! -d "${fragment}" ]; then
-        echo "Error: $0[${LINENO}]"
-        echo "result: ${result}"
-        echo "dir not found: ${fragment}"
-        exit 1
-    fi
-
-    year=$(jq -r '.year' "${fragment}/fragment.json")
-    result=$?
-    if [ ! ${result} -eq 0 ]; then
-        echo "Error: $0[${LINENO}]"
-        echo "result: ${result}"
-        echo "fragment: ${fragment}"
-        exit 1
-    fi
-
-    month=$(jq -r '.month' "${fragment}/fragment.json")
-    result=$?
-    if [ ! ${result} -eq 0 ]; then
-        echo "Error: $0[${LINENO}]"
-        echo "result: ${result}"
-        echo "fragment: ${fragment}"
-        exit 1
-    fi
-
-    day=$(jq -r '.day' "${fragment}/fragment.json")
-    result=$?
-    if [ ! ${result} -eq 0 ]; then
-        echo "Error: $0[${LINENO}]"
-        echo "result: ${result}"
-        echo "fragment: ${fragment}"
-        exit 1
-    fi
-
-    order=$(jq -r '.order' "${fragment}/fragment.json")
-    result=$?
-    if [ ! ${result} -eq 0 ]; then
-        echo "Error: $0[${LINENO}]"
-        echo "result: ${result}"
-        echo "fragment: ${fragment}"
-        exit 1
-    fi
-
-    month2=$(printf "%02d" ${month})
-    targetFragmentsDir="output/fragments/${year}/${month2}"
-    targetHtmlDir="output/html/"
-
-    # Make sure the target fragment directory exists
-    mkdir -p "${targetFragmentsDir}"
-    result=$?
-    if [ ! ${result} -eq 0 ]; then
-        echo "Error: $0[${LINENO}]"
-        echo "result: ${result}"
-        echo "targetFragmentsDir: ${targetFragmentsDir}"
-        exit 1
-    fi
-
-    # Make sure the target html exists
-    mkdir -p "${targetHtmlDir}"
-    result=$?
-    if [ ! ${result} -eq 0 ]; then
-        echo "Error: $0[${LINENO}]"
-        echo "result: ${result}"
-        echo "targetHtmlDir: ${targetHtmlDir}"
-        exit 1
-    fi
-
-    day2=$(printf "%02d" ${day})
-    basename=$(basename ${fragment})
-    filename="${day2}-${order}-${basename%.*}"
-    targetFragment="${targetFragmentsDir}/${filename}"
-
-    echo "making targetFragment: ${targetFragment}"
-
-    mkdir -p "${targetFragment}"
-    result=$?
-    if [ ! ${result} -eq 0 ]; then
-        echo "Error: $0[${LINENO}]"
-        echo "result: ${result}"
-        echo "targetFragment: ${targetFragment}"
-        exit 1
-    fi
-
-    rsync --archive --quiet --exclude '**/@*' --exclude '**/images' ${fragment}/ ${targetFragment}
-    result=$?
-    if [ ! ${result} -eq 0 ]; then
-        echo "Error: $0[${LINENO}]"
-        echo "result: ${result}"
-        echo "targetFragment: ${targetFragment}"
-        exit 1
-    fi
-
-# doit=true
-# if [ ${year} -ne 1830 ]; then doit=false; fi
-# if [ ${month} -ne 8 ]; then doit=false; fi
-# if [ ${day} -ne 10 ]; then doit=false; fi
-# if [ ${doit} == true ]; then
-#     echo "-----------------------------------------------------------------"
-#     echo ${targetFragment}
-#     tree ${targetFragment}
-#     set -x
-# fi
-
-    targetHtmlImages="output/html/images"
-    list="[]"
-    readarray -d '' array < <(find ${fragment} \( -iname "*.jpeg" -or -iname "*.jpg" -or -iname "*.png" \) -print0)
-    for i in "${array[@]}"; do
-        imagename=$(basename ${i})
-
-        if [[ "${i}" == *"/@eaDir/"* ]]; then
-            continue
-        fi
-
-        list=$(echo ${list} | jq --arg name ${imagename} '. += [ $name ]')
-        result=$?
-        if [ ! ${result} -eq 0 ]; then
-            echo "Error: $0[${LINENO}]"
-            echo "result: ${result}"
-            echo "fragment: ${fragment}"
-            exit 1
-        fi
-
-        cp ${fragment}/images/${imagename} ${targetHtmlImages}
-        result=$?
-        if [ ! ${result} -eq 0 ]; then
-            echo "Error: $0[${LINENO}]"
-            echo "result: ${result}"
-            exit 1
-        fi
-    done
-
-    output=$(jq --argjson groupInfo "${list}" '.images += $groupInfo' "${targetFragment}/fragment.json")
-    result=$?
-    if [ ! ${result} -eq 0 ]; then
-        echo "Error: $0[${LINENO}]"
-        echo "result: ${result}"
-        echo "fragment: ${fragment}"
-        exit 1
-    fi
-
-    echo ${output} > "${targetFragment}/fragment.json"
-
-# if [ ${doit} == true ]; then
-#     echo "... exiting ..."
-#     exit 99
-# fi
-}
-
-
-
-
-
-
-
+#-------------------------------------------
+# Copy the images
+#-------------------------------------------
 root="/media/NAS/photo/documents/sea-captains-chest"
+if [ ! -d "${root}" ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "root not found: ${root}"
+    exit 1
+fi
 
 dirs=()
 dirs+=('diary-1828-and-1829-and-jan-1830')
@@ -180,70 +60,27 @@ dirs+=('diary-1838')
 dirs+=('diary-1839')
 
 #-------------------------------------------
-# Check, clear and make directories 
+# Copy the images
 #-------------------------------------------
-if [ ! -d "${root}" ]; then
-    echo "Error: $0[${LINENO}]"
-    echo "root not found: [${root}]"
-    exit 1
-fi
 
-rm -rf temp output
-result=$?
-if [ ! ${result} -eq 0 ]; then
-    echo "Error: $0[${LINENO}]"
-    echo "result: ${result}"
-    exit 1
-fi
-
-mkdir -p "output/html/images" "output/html/css" "output/html/scripts" "output/html/controls" "temp"
-result=$?
-if [ ! ${result} -eq 0 ]; then
-    echo "Error: $0[${LINENO}]"
-    echo "result: ${result}"
-    exit 1
-fi
-
-
-#-------------------------------------------
-# Clear the temporary directory 
-#-------------------------------------------
-mkdir -p output/temp
-result=$?
-if [ ! ${result} -eq 0 ]; then
-    echo "Error: $0[${LINENO}]"
-    echo "result: ${result}"
-    echo "make --file \"${makefile}\""
-    exit 1
-fi
-
-rm -rf output/temp/*
-result=$?
-if [ ! ${result} -eq 0 ]; then
-    echo "Error: $0[${LINENO}]"
-    echo "result: ${result}"
-    echo "make --file \"${makefile}\""
-    exit 1
-fi
-
-#-------------------------------------------
-# Copy the input fragments 
-#-------------------------------------------
 for diary in "${dirs[@]}"; do
     echo "---[ manual: ${diary} ]----------------------------"
 
-    for fragment in "${root}/${diary}/metadata/fragments"/*; do
+    sourceDir="${root}/${diary}/metadata/fragments"
 
-        if [ ! -f "${fragment}/fragment.json" ]; then
+    readarray -d '' array < <(find ${sourceDir} \( -iname "*.jpeg" -or -iname "*.jpg" -or -iname "*.png" \) -print0)
+    for image in "${array[@]}"; do
+
+        if [[ "${image}" == *"/@eaDir/"* ]]; then
             continue
         fi
 
-        copyFragment "${fragment}"
+        cp -r ${image} output/html/images/
         result=$?
         if [ ! ${result} -eq 0 ]; then
             echo "Error: $0[${LINENO}]"
             echo "result: ${result}"
-            echo "fragment: ${fragment}"
+            echo "make --file \"${makefile}\""
             exit 1
         fi
     done
@@ -255,22 +92,14 @@ done
 for file in input/styles/*; do
     [ -f "${file}" ] || continue
 
-    basename=$(basename "${file}")
-
-    target="output/html/css/${basename}"
-    if [ "${target}" -nt "${file}" ]; then
-        : # echo "up-to-date: ${target}"
-    else
-        # echo "updating: ${target}"
-        cp "${file}" "${target}"
-        result=$?
-        if [ ! ${result} -eq 0 ]; then
-            echo "Error: $0[${LINENO}]"
-            echo "result: ${result}"
-            echo "file: ${file}"
-            echo "target: ${target}"
-            exit 1
-        fi
+    cp "${file}" "output/html/css/"
+    result=$?
+    if [ ! ${result} -eq 0 ]; then
+        echo "Error: $0[${LINENO}]"
+        echo "result: ${result}"
+        echo "file: ${file}"
+        echo "target: ${target}"
+        exit 1
     fi
 done
 
@@ -280,22 +109,13 @@ done
 for file in input/scripts/*; do
     [ -f "${file}" ] || continue
 
-    basename=$(basename "${file}")
-
-    target="output/html/scripts/${basename}"
-    if [ "${target}" -nt "${file}" ]; then
-        : # echo "up-to-date: ${target}"
-    else
-        # echo "updating: ${target}"
-        cp "${file}" "${target}"
-        result=$?
-        if [ ! ${result} -eq 0 ]; then
-            echo "Error: $0[${LINENO}]"
-            echo "result: ${result}"
-            echo "file: ${file}"
-            echo "target: ${target}"
-            exit 1
-        fi
+    cp "${file}" "output/html/scripts/"
+    result=$?
+    if [ ! ${result} -eq 0 ]; then
+        echo "Error: $0[${LINENO}]"
+        echo "result: ${result}"
+        echo "file: ${file}"
+        exit 1
     fi
 done
 
@@ -305,22 +125,13 @@ done
 for file in input/controls/*; do
     [ -f "${file}" ] || continue
 
-    basename=$(basename "${file}")
-
-    target="output/html/controls/${basename}"
-    if [ "${target}" -nt "${file}" ]; then
-        : # echo "up-to-date: ${target}"
-    else
-        # echo "updating: ${target}"
-        cp "${file}" "${target}"
-        result=$?
-        if [ ! ${result} -eq 0 ]; then
-            echo "Error: $0[${LINENO}]"
-            echo "result: ${result}"
-            echo "file: ${file}"
-            echo "target: ${target}"
-            exit 1
-        fi
+    cp "${file}" "output/html/controls/"
+    result=$?
+    if [ ! ${result} -eq 0 ]; then
+        echo "Error: $0[${LINENO}]"
+        echo "result: ${result}"
+        echo "file: ${file}"
+        exit 1
     fi
 done
 
