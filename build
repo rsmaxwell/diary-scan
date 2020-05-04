@@ -67,7 +67,7 @@ dirs+=('diary-1839')
 for diary in "${dirs[@]}"; do
     echo "---[ manual: ${diary} ]----------------------------"
 
-    sourceDir="${root}/${diary}/metadata/fragments"
+    sourceDir="${root}/${diary}/metadata/images"
 
     readarray -d '' array < <(find ${sourceDir} \( -iname "*.jpeg" -or -iname "*.jpg" -or -iname "*.png" \) -print0)
     for image in "${array[@]}"; do
