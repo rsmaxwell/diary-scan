@@ -17,7 +17,7 @@ if [ ! ${result} -eq 0 ]; then
     exit 1
 fi
 
-mkdir -p "output"
+mkdir -p "output/html/images/"
 result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
