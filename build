@@ -90,7 +90,7 @@ done
 #-------------------------------------------
 # Generate the HTML documents from the fragments 
 #-------------------------------------------
-for dir in output/fragments/*; do
+for dir in input/fragments/*; do
     [ -d "${dir}" ] || continue
 
     year=$(basename ${dir})
