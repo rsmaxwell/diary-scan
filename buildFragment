@@ -19,7 +19,7 @@ if [ ! -f "${fragment_json}" ]; then
     exit 1
 fi
 
-stylesheet="input/styles/diary.css"
+stylesheet="input/html/css/diary.css"
 if [ ! -f "${stylesheet}" ]; then
     echo "stylesheet not found: ${stylesheet}"
     exit 1
@@ -52,7 +52,7 @@ if [ ! ${result} -eq 0 ]; then
     exit 1
 fi
 
-source="${root}/${diary}/metadata/fragments"
+source="${root}/${diary}/metadata/images"
 if [ ! -d "${source}" ]; then
     echo "directory not found: ${source}"
     exit 1
@@ -117,7 +117,7 @@ document=${fragmentPath}/document.html
 cat > ${document} << EOF
 <html>
 <head>
-<link rel="stylesheet" type="text/css" href="../../../../styles/diary.css">
+<link rel="stylesheet" type="text/css" href="../../../../html/css/diary.css">
 </head>
 <body>
 EOF

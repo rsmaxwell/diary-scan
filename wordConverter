@@ -11,9 +11,9 @@ REPOSITORYID="releases"
 REPOSITORY="releases"
 GROUPID="com.rsmaxwell.diary"
 ARTIFACTID="wordconverter"
-VERSION="0.0.17"
+VERSION="0.0.20"
 
-# find the latest version of the wordconverter jar
+# get the wordconverter jar
 stdout=$(./getJar2 "${REPOSITORYURL}" "${REPOSITORYID}" "${REPOSITORY}" "${GROUPID}" "${ARTIFACTID}" "${VERSION}")
 result=$?
 if [ ${result} -eq 0 ]; then
@@ -137,6 +137,7 @@ baseDir="input/fragments"
 
 java -cp ${classpath} com.rsmaxwell.diary.wordconverter.App --base ${baseDir} --fragment ${fragmentDir}
 result=$?
+
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
     echo "result: ${result}"
