@@ -185,6 +185,14 @@ else
     exit 1
 fi
 
+rm -rf output/fragments
+result=$?
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    exit 1
+fi
+
 # Extract html fragments from the word file
 
 if [[ "$OSTYPE" == "cygwin" ]]; then
@@ -216,7 +224,6 @@ if [ ! ${result} -eq 0 ]; then
     echo "diary: ${diary}"
     echo "imageFile: ${imageFile}"
     exit 1
-fi
 
 cp -r output/fragments input
 result=$?
@@ -224,4 +231,5 @@ if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
     echo "result: ${result}"
     exit 1
+fi
 fi
