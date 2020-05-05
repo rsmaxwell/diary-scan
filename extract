@@ -224,6 +224,7 @@ if [ ! ${result} -eq 0 ]; then
     echo "diary: ${diary}"
     echo "imageFile: ${imageFile}"
     exit 1
+fi 
 
 cp -r output/fragments input
 result=$?
