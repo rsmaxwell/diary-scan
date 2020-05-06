@@ -1,11 +1,12 @@
 #!/bin/bash
 
-fragmentDir=$1
-if [ -z "${fragmentDir}" ]; then
+arg1=$1
+if [ -z "${arg1}" ]; then
     echo "Missing fragmentDir argument"
     exit 1
 fi
-fragmentPath="input/fragments/${fragmentDir//\\//}"
+fragmentDir="${arg1//\\//}"
+fragmentPath="input/fragments/${fragmentDir}"
 
 fragment_html="${fragmentPath}/fragment.html"
 if [ ! -f "${fragment_html}" ]; then
