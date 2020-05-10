@@ -50,9 +50,10 @@ REPOSITORY="releases"
 GROUPID="com.rsmaxwell.diary"
 
 ARTIFACTID="generator"
+VERSION="0.0.88"
 
 # find the latest version of the generator jar
-stdout=$(./getLatestJar "${REPOSITORYURL}" "${REPOSITORYID}" "${REPOSITORY}" "${GROUPID}" "${ARTIFACTID}")
+stdout=$(./getJar2 "${REPOSITORYURL}" "${REPOSITORYID}" "${REPOSITORY}" "${GROUPID}" "${ARTIFACTID}" "${VERSION}" )
 result=$?
 if [ ${result} -eq 0 ]; then
     generatorJar=${stdout}
@@ -64,9 +65,10 @@ else
 fi
 
 ARTIFACTID="diaryjson"
+VERSION="0.0.65"
 
 # find the latest version of the diaryjson jar
-stdout=$(./getLatestJar "${REPOSITORYURL}" "${REPOSITORYID}" "${REPOSITORY}" "${GROUPID}" "${ARTIFACTID}")
+stdout=$(./getJar2 "${REPOSITORYURL}" "${REPOSITORYID}" "${REPOSITORY}" "${GROUPID}" "${ARTIFACTID}" "${VERSION}" )
 result=$?
 if [ ${result} -eq 0 ]; then
     diaryjsonJar=${stdout}

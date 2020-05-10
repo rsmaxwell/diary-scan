@@ -60,7 +60,7 @@ REPOSITORY="releases"
 GROUPID="com.rsmaxwell.diary"
 
 ARTIFACTID="extractor"
-VERSION="0.0.108"
+VERSION="0.0.109"
 
 # find the latest version of the extractor jar
 stdout=$(./getJar2 "${REPOSITORYURL}" "${REPOSITORYID}" "${REPOSITORY}" "${GROUPID}" "${ARTIFACTID}" "${VERSION}" )
@@ -75,7 +75,7 @@ else
 fi
 
 ARTIFACTID="diaryjson"
-VERSION="0.0.64"
+VERSION="0.0.65"
 
 # find the latest version of the diaryjson jar
 stdout=$(./getJar2 "${REPOSITORYURL}" "${REPOSITORYID}" "${REPOSITORY}" "${GROUPID}" "${ARTIFACTID}" "${VERSION}" )
