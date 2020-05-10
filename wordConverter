@@ -11,7 +11,7 @@ REPOSITORYID="releases"
 REPOSITORY="releases"
 GROUPID="com.rsmaxwell.diary"
 ARTIFACTID="wordconverter"
-VERSION="0.0.26"
+VERSION="0.0.27"
 
 # get the wordconverter jar
 stdout=$(./getJar2 "${REPOSITORYURL}" "${REPOSITORYID}" "${REPOSITORY}" "${GROUPID}" "${ARTIFACTID}" "${VERSION}")
