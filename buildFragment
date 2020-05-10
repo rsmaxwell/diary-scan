@@ -78,7 +78,7 @@ else
         exit 1
     fi
 
-    if [ ${images} == null ]; then
+    if [ "${images}" == null ]; then
         copyImages=false
     fi
 fi
