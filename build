@@ -88,6 +88,14 @@ for diary in "${dirs[@]}"; do
 done
 
 #-------------------------------------------
+# Export the build timestamp 
+#-------------------------------------------
+export BUILD_DATE=$(date '+%Y-%m-%d %H:%M:%S')
+export BUILD_YEAR=$(date '+%Y')
+export BUILD_MONTH=$(date '+%m')
+export BUILD_DAY=$(date '+%d')
+
+#-------------------------------------------
 # Generate the HTML documents from the fragments 
 #-------------------------------------------
 for dir in input/fragments/*; do
