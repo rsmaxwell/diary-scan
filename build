@@ -1,5 +1,40 @@
 #!/bin/bash
 
+configfile="${HOME}/diary.json"
+if [ ! -f "${configfile}" ]; then
+    echo "configfile not found: ${configfile}"
+    exit 1
+fi
+
+#########################################################################################
+# Read configuration
+#########################################################################################
+root=$(jq -r '.root' ${configfile})
+result=$?
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    exit 1
+fi
+
+path=$(jq -r '.path' ${configfile})
+result=$?
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    exit 1
+fi
+
+diaries=$(jq -r '.diaries' ${configfile})
+result=$?
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    exit 1
+fi
+
+
+
 input_fragments="input/fragments"
 if [ ! -d "${input_fragments}" ]; then
     echo "directory not found ${input_fragments}"
@@ -41,33 +76,21 @@ fi
 #-------------------------------------------
 # Copy the images
 #-------------------------------------------
-root="/media/NAS/photo/documents/sea-captains-chest"
 if [ ! -d "${root}" ]; then
     echo "Error: $0[${LINENO}]"
     echo "root not found: ${root}"
     exit 1
 fi
 
-dirs=()
-dirs+=('diary-1828-and-1829-and-jan-1830')
-dirs+=('diary-1830')
-dirs+=('diary-1831')
-dirs+=('diary-1832')
-dirs+=('diary-1834')
-dirs+=('diary-1835')
-dirs+=('diary-1836')
-dirs+=('diary-1837')
-dirs+=('diary-1838')
-dirs+=('diary-1839')
-
 #-------------------------------------------
 # Copy the images
 #-------------------------------------------
+for row in $(echo "${diaries}" | jq -r '.[] | @base64'); do
 
-for diary in "${dirs[@]}"; do
+    diary=$(echo ${row} | base64 --decode)
     echo "---[ ${diary} ]----------------------------"
 
-    sourceDir="${root}/${diary}/metadata/images"
+    sourceDir="${root}/${path}/${diary}/metadata/images"
 
     readarray -d '' array < <(find ${sourceDir} \( -iname "*.jpeg" -or -iname "*.jpg" -or -iname "*.png" \) -print0)
     for image in "${array[@]}"; do
