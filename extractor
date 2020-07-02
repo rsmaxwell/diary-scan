@@ -21,6 +21,14 @@ if [ ! ${result} -eq 0 ]; then
     exit 1
 fi
 
+path=$(jq -r '.path' "${HOME}/diary.json")
+result=$?
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    exit 1
+fi
+
 diary=$(jq -r '.diary' "${HOME}/diary.json")
 result=$?
 if [ ! ${result} -eq 0 ]; then
@@ -29,7 +37,7 @@ if [ ! ${result} -eq 0 ]; then
     exit 1
 fi
 
-wordFile="${root}/${diary}/metadata/word/${word}"
+wordFile="${root}/${path}/${diary}/metadata/word/${word}"
 if [ ! -f "${wordFile}" ]; then
     echo "Error: $0[${LINENO}]"
     echo "file not found: ${wordFile}"
@@ -45,13 +53,14 @@ fi
 
 number="${BASH_REMATCH[1]}"
 image="img${number}.jpg"
-imageFile="${root}/${diary}/${image}"
+imageFile="$(realpath ${root}/${path}/${diary}/${image})"
 if [ ! -f "${imageFile}" ]; then
     echo "Error: $0[${LINENO}]"
     echo "file not found: ${imageFile}"
     exit 1
 fi
 
+imageFileJava=$(cygpath -w "${imageFile}")
 
 
 REPOSITORYURL="https://server.rsmaxwell.co.uk/archiva/repository"
@@ -60,7 +69,7 @@ REPOSITORY="releases"
 GROUPID="com.rsmaxwell.diary"
 
 ARTIFACTID="extractor"
-VERSION="0.0.112"
+VERSION="0.0.113"
 
 # get the extractor jar
 stdout=$(./getJar2 "${REPOSITORYURL}" "${REPOSITORYID}" "${REPOSITORY}" "${GROUPID}" "${ARTIFACTID}" "${VERSION}" )
@@ -198,9 +207,11 @@ fi
 if [[ "$OSTYPE" == "cygwin" ]]; then
     SEP=";"
     rootJava=$(cygpath -w "${root}")
+    imageFileJava=$(cygpath -w "${imageFile}")
 else
     SEP=":"
     rootJava=${root}
+    imageFileJava=${root}
 fi
 
 echo "root:   ${root}"
@@ -222,7 +233,7 @@ if [ ! ${result} -eq 0 ]; then
     echo "root: ${root}"
     echo "rootJava: ${rootJava}"
     echo "diary: ${diary}"
-    echo "imageFile: ${imageFile}"
+    echo "imageFileJava: ${imageFileJava}"
     exit 1
 fi 
 
