@@ -69,7 +69,7 @@ REPOSITORY="releases"
 GROUPID="com.rsmaxwell.diary"
 
 ARTIFACTID="extractor"
-VERSION="0.0.114"
+VERSION="0.0.115"
 
 # get the extractor jar
 stdout=$(./getJar2 "${REPOSITORYURL}" "${REPOSITORYID}" "${REPOSITORY}" "${GROUPID}" "${ARTIFACTID}" "${VERSION}" )
