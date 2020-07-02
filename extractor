@@ -225,7 +225,7 @@ classpath="${classpath}${SEP}${apacheCommonsCliJar}${SEP}${apacheCommonsTextJar}
 classpath="${classpath}${SEP}${jacksonDataBindJar}${SEP}${jacksonCoreJar}${SEP}${jacksonAnnotationsJar}"
 classpath="${classpath}${SEP}${slf4jApiJar}${SEP}${slf4jSimpleJar}"
 
-java -cp ${classpath} com.rsmaxwell.extractor.App --root "${rootJava}" --diary "${diary}" --word "${word}" --image "${image}" --output "output"
+java -cp ${classpath} com.rsmaxwell.extractor.App --root "${rootJava}" --path "${path}" --diary "${diary}" --word "${word}" --image "${image}" --output "output"
 result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
