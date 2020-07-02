@@ -2,8 +2,10 @@
   "year" : 1831,
   "month" : 9,
   "day" : 22,
-  "order" : "img2805",
+  "order" : "b3",
   "imageFilename" : "img2805.jpg",
   "diary" : "diary-1831",
-  "images" : [ ]
+  "images": [
+    "img2805-launch-of-hms-thunderer.jpg"
+  ]
 }
