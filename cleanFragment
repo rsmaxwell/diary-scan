@@ -44,6 +44,15 @@ if [ ! ${result} -eq 0 ]; then
     exit 1
 fi
 
+path=$(jq -r '.path' ${configfile})
+result=$?
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "fragment: ${fragment}"
+    exit 1
+fi
+
 diary=$(jq -r '.diary' ${fragment_json})
 result=$?
 if [ ! ${result} -eq 0 ]; then
@@ -53,8 +62,15 @@ if [ ! ${result} -eq 0 ]; then
     exit 1
 fi
 
-source="${root}/${diary}/metadata/images"
+if [ ! -d "${root}" ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "directory not found: ${root}"
+    exit 1
+fi
+
+source="$(realpath ${root}/${path}/${diary}/metadata/images)"
 if [ ! -d "${source}" ]; then
+    echo "Error: $0[${LINENO}]"
     echo "directory not found: ${source}"
     exit 1
 fi
