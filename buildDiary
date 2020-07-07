@@ -30,15 +30,33 @@ if [ ! ${result} -eq 0 ]; then
     exit 1
 fi
 
-diaries=$(jq -r '.diaries' ${configfile})
+diary=$(jq -r '.diary' ${configfile})
 result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
     echo "result: ${result}"
     exit 1
 fi
+diaryPath="$(realpath ${root}/${path}/${diary})"
+if [ ! -d "${diaryPath}" ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "diary not found: ${diaryPath}"
+    exit 1
+fi
+imagesPath="$(realpath ${diaryPath}/metadata/images)"
+if [ ! -d "${root}/${path}/${diary}/metadata/images" ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "images not found: ${imagesPath}"
+    exit 1
+fi
 
-
+year=$(jq -r '.year' ${configfile})
+result=$?
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    exit 1
+fi
 
 input_fragments="input/fragments"
 if [ ! -d "${input_fragments}" ]; then
@@ -81,43 +99,23 @@ fi
 #-------------------------------------------
 # Copy the images
 #-------------------------------------------
-for row in $(echo "${diaries}" | jq -r '.[] | @base64'); do
+echo "---[ ${diary} ]----------------------------"
 
-    diary=$(echo ${row} | base64 --decode)
-    echo "---[ ${diary} ]----------------------------"
+readarray -d '' array < <(find ${imagesPath} \( -iname "*.jpeg" -or -iname "*.jpg" -or -iname "*.png" \) -print0)
+for image in "${array[@]}"; do
 
-    diaryPath="$(realpath ${root}/${path}/${diary})"
-    imagesPath="${diaryPath}/metadata/images"
-
-    diaryPath="$(realpath ${root}/${path}/${diary})"
-    if [ ! -d "${diaryPath}" ]; then
-        echo "Error: $0[${LINENO}]"
-        echo "diary not found: ${diaryPath}"
-        exit 1
-    fi
-    imagesPath="$(realpath ${diaryPath}/metadata/images)"
-    if [ ! -d "${root}/${path}/${diary}/metadata/images" ]; then
-        echo "Error: $0[${LINENO}]"
-        echo "images not found: ${imagesPath}"
-        exit 1
+    if [[ "${image}" == *"/@eaDir/"* ]]; then
+        continue
     fi
 
-    readarray -d '' array < <(find ${imagesPath} \( -iname "*.jpeg" -or -iname "*.jpg" -or -iname "*.png" \) -print0)
-    for image in "${array[@]}"; do
-
-        if [[ "${image}" == *"/@eaDir/"* ]]; then
-            continue
-        fi
-
-        cp -r ${image} output/html/images/
-        result=$?
-        if [ ! ${result} -eq 0 ]; then
-            echo "Error: $0[${LINENO}]"
-            echo "result: ${result}"
-            echo "make --file \"${makefile}\""
-            exit 1
-        fi
-    done
+    cp -r ${image} output/html/images/
+    result=$?
+    if [ ! ${result} -eq 0 ]; then
+        echo "Error: $0[${LINENO}]"
+        echo "result: ${result}"
+        echo "make --file \"${makefile}\""
+        exit 1
+    fi
 done
 
 #-------------------------------------------
@@ -131,42 +129,13 @@ export BUILD_DAY=$(date '+%d')
 #-------------------------------------------
 # Generate the HTML documents from the fragments 
 #-------------------------------------------
-for dir in input/fragments/*; do
-    [ -d "${dir}" ] || continue
-
-    year=$(basename ${dir})
-
-    echo "generating diary for year: ${year}"
-    ./generator input output ${year}
-    result=$?
-    if [ ! ${result} -eq 0 ]; then
-        echo "Error: $0[${LINENO}]"
-        echo "result: ${result}"
-        exit 1
-    fi
-done
-
-#-------------------------------------------
-# Generate an index.html pointing to the diaries
-#-------------------------------------------
-cat << EOF > output/html/index.html
-<!DOCTYPE html>
-<html>
-
-<body>
-
-<h1>Diaries</h1>
-
-<ul>
-    <li><a href="1828.html">1828</a><br>
-    <li><a href="1829.html">1829</a><br>
-    <li><a href="1830.html">1830</a><br>
-    <li><a href="1831.html">1831</a><br>
-    <li><a href="1832.html">1832</a><br>
-</ul>
+echo "generating diary for year: ${year}"
+./generator input output ${year}
+result=$?
+if [ ! ${result} -eq 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    exit 1
+fi
 
 
-</body>
-</html>
-
-EOF
