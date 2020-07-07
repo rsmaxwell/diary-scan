@@ -30,23 +30,11 @@ if [ ! ${result} -eq 0 ]; then
     exit 1
 fi
 
-diary=$(jq -r '.diary' ${configfile})
+diaries=$(jq -r '.diaries' ${configfile})
 result=$?
 if [ ! ${result} -eq 0 ]; then
     echo "Error: $0[${LINENO}]"
     echo "result: ${result}"
-    exit 1
-fi
-diaryPath="$(realpath ${root}/${path}/${diary})"
-if [ ! -d "${diaryPath}" ]; then
-    echo "Error: $0[${LINENO}]"
-    echo "diary not found: ${diaryPath}"
-    exit 1
-fi
-imagesPath="$(realpath ${diaryPath}/metadata/images)"
-if [ ! -d "${root}/${path}/${diary}/metadata/images" ]; then
-    echo "Error: $0[${LINENO}]"
-    echo "images not found: ${imagesPath}"
     exit 1
 fi
 
@@ -99,23 +87,43 @@ fi
 #-------------------------------------------
 # Copy the images
 #-------------------------------------------
-echo "---[ ${diary} ]----------------------------"
+for row in $(echo "${diaries}" | jq -r '.[] | @base64'); do
 
-readarray -d '' array < <(find ${imagesPath} \( -iname "*.jpeg" -or -iname "*.jpg" -or -iname "*.png" \) -print0)
-for image in "${array[@]}"; do
+    diary=$(echo ${row} | base64 --decode)
+    echo "---[ ${diary} ]----------------------------"
 
-    if [[ "${image}" == *"/@eaDir/"* ]]; then
-        continue
-    fi
+    diaryPath="$(realpath ${root}/${path}/${diary})"
+    imagesPath="${diaryPath}/metadata/images"
 
-    cp -r ${image} output/html/images/
-    result=$?
-    if [ ! ${result} -eq 0 ]; then
+    diaryPath="$(realpath ${root}/${path}/${diary})"
+    if [ ! -d "${diaryPath}" ]; then
         echo "Error: $0[${LINENO}]"
-        echo "result: ${result}"
-        echo "make --file \"${makefile}\""
+        echo "diary not found: ${diaryPath}"
         exit 1
     fi
+    imagesPath="$(realpath ${diaryPath}/metadata/images)"
+    if [ ! -d "${root}/${path}/${diary}/metadata/images" ]; then
+        echo "Error: $0[${LINENO}]"
+        echo "images not found: ${imagesPath}"
+        exit 1
+    fi
+
+    readarray -d '' array < <(find ${imagesPath} \( -iname "*.jpeg" -or -iname "*.jpg" -or -iname "*.png" \) -print0)
+    for image in "${array[@]}"; do
+
+        if [[ "${image}" == *"/@eaDir/"* ]]; then
+            continue
+        fi
+
+        cp -r ${image} output/html/images/
+        result=$?
+        if [ ! ${result} -eq 0 ]; then
+            echo "Error: $0[${LINENO}]"
+            echo "result: ${result}"
+            echo "make --file \"${makefile}\""
+            exit 1
+        fi
+    done
 done
 
 #-------------------------------------------
@@ -138,4 +146,27 @@ if [ ! ${result} -eq 0 ]; then
     exit 1
 fi
 
+#-------------------------------------------
+# Generate an index.html pointing to the diaries
+#-------------------------------------------
+cat << EOF > output/html/index.html
+<!DOCTYPE html>
+<html>
 
+<body>
+
+<h1>Diaries</h1>
+
+<ul>
+    <li><a href="1828.html">1828</a><br>
+    <li><a href="1829.html">1829</a><br>
+    <li><a href="1830.html">1830</a><br>
+    <li><a href="1831.html">1831</a><br>
+    <li><a href="1832.html">1832</a><br>
+</ul>
+
+
+</body>
+</html>
+
+EOF
