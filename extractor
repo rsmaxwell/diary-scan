@@ -225,6 +225,8 @@ classpath="${classpath}${SEP}${apacheCommonsCliJar}${SEP}${apacheCommonsTextJar}
 classpath="${classpath}${SEP}${jacksonDataBindJar}${SEP}${jacksonCoreJar}${SEP}${jacksonAnnotationsJar}"
 classpath="${classpath}${SEP}${slf4jApiJar}${SEP}${slf4jSimpleJar}"
 
+# read -p "Press enter to continue 1"
+
 java -cp ${classpath} com.rsmaxwell.extractor.App --root "${rootJava}" --path "${path}" --diary "${diary}" --word "${word}" --image "${image}" --output "output"
 result=$?
 if [ ! ${result} -eq 0 ]; then
