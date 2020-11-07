@@ -1,75 +1,59 @@
 #!/bin/bash
 
-. /opt/tasks/task-definitions
+if [ -z "${SERVER_USERNAME}" ]; then
+    echo "SERVER_USERNAME not specified"
+    exit 1
+fi
 
-#########################################################################################
-# Create a task to apply the feature
-#########################################################################################
-echo "Create a task to apply the feature"
-taskDir=$(newTask)
+if [ -z "${SERVER_HOST}" ]; then
+    echo "SERVER_HOST not specified"
+    exit 1
+fi
 
+if [ -z "${SERVER_PORT}" ]; then
+    echo "SERVER_PORT not specified"
+    exit 1
+fi
 
-#########################################################################################
-# Create a task to configure the site
-#########################################################################################
-echo "Create a task to configure the site"
-task=${tasksBase}/${taskDir}/task
+source="./output/html/"
+target="${SERVER_USERNAME}@${SERVER_HOST}:/srv/httpd/htdocs/diaries"
 
-cat >${task} <<'EOL'
-#!/bin/bash
+array=()
+array+=("--rsh" "ssh -p ${SERVER_PORT}")
+array+=("--rsync-path=sudo -u www-data rsync")
+array+=("--archive")
+array+=("--verbose")
+array+=("--compress")
+array+=("--human-readable")
+array+=("--progress")
+array+=("--delete")
+array+=("--delete-excluded")
+array+=("--stats")
+array+=("${source}")
+array+=("${target}")
 
-sudo chown -R www-data:www-data html/
+delimiter="|"
+options=""
+for i in "${array[@]}"; do
+    if [[ "${options}" == "" ]]; then
+        options=${i}
+    else
+        options="${options}${delimiter}${i}"
+    fi
+done
+
+OFS=${IFS}
+IFS=${delimiter}
+set -x
+rsync ${options}
+set +x
 result=$?
-if [ ! ${result} -eq 0 ]; then
+IFS=${OFS}
+
+if [ ! ${result} == 0 ]; then
     echo "Error: $0[${LINENO}]"
     echo "result = ${result}"
     exit 1
 fi
 
-sudo chmod -R 700 html/
-result=$?
-if [ ! ${result} -eq 0 ]; then
-    echo "Error: $0[${LINENO}]"
-    echo "result = ${result}"
-    exit 1
-fi
-
-sudo rsync -avh --delete --ignore-times --exclude pages html/ /srv/httpd/htdocs/diaries
-result=$?
-if [ ! ${result} -eq 0 ]; then
-    echo "Error: $0[${LINENO}]"
-    echo "result = ${result}"
-    exit 1
-fi
-
-EOL
-
-
-#########################################################################################
-# Populate the task with the run script and associated files
-#########################################################################################
-echo "Populate the task"
-
-directory=$(pwd)
-( cd ${tasksBase}/${taskDir}; mkdir -p ./html; cp -rs ${directory}/output/html/* ./html/ )
-result=$?
-if [ ! ${result} -eq 0 ]; then
-    echo "Error: $0[${LINENO}]"
-    echo "result = ${result}"
-    exit 1
-fi
-
-#########################################################################################
-# Run the task
-#########################################################################################
-echo "Run task"
-machine="server"
-runTask ${machine} ${taskDir}
-result=$?
-if [ ! ${result} -eq 0 ]; then
-    echo "Error: $0[${LINENO}]"
-    echo "result = ${result}"
-    exit 1
-fi
-
-
+EOF
