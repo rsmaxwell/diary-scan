@@ -1,32 +1,44 @@
 #!/bin/bash
 
-if [ -z "${SERVER_USERNAME}" ]; then
-    echo "SERVER_USERNAME not specified"
+. ~/web-server-info
+
+if [ -z "${SERVER_SSH_USERNAME}" ]; then
+    echo "SERVER_SSH_USERNAME not specified"
     exit 1
 fi
 
-if [ -z "${SERVER_HOST}" ]; then
-    echo "SERVER_HOST not specified"
+if [ -z "${SERVER_SSH_HOST}" ]; then
+    echo "SERVER_SSH_HOST not specified"
     exit 1
 fi
 
-if [ -z "${SERVER_PORT}" ]; then
-    echo "SERVER_PORT not specified"
+if [ -z "${SERVER_SSH_PORT}" ]; then
+    echo "SERVER_SSH_PORT not specified"
     exit 1
 fi
+
+if [ -z "${SERVER_RUN_USERNAME}" ]; then
+    echo "SERVER_RUN_USERNAME not specified"
+    exit 1
+fi
+
+if [ -z "${SERVER_TARGET_DIRECTORY}" ]; then
+    echo "SERVER_TARGET_DIRECTORY not specified"
+    exit 1
+fi
+
 
 source="./output/html/"
-target="${SERVER_USERNAME}@${SERVER_HOST}:/srv/httpd/htdocs/diaries"
+target="${SERVER_SSH_USERNAME}@${SERVER_SSH_HOST}:${SERVER_TARGET_DIRECTORY}"
 
 array=()
-array+=("--rsh" "ssh -p ${SERVER_PORT}")
-array+=("--rsync-path=sudo -u www-data rsync")
+array+=("--rsh" "ssh -p ${SERVER_SSH_PORT}")
+array+=("--rsync-path=sudo -u ${SERVER_RUN_USERNAME} rsync")
 array+=("--archive")
+array+=("--verbose")
 array+=("--compress")
 array+=("--human-readable")
 array+=("--delete")
-array+=("--delete-excluded")
-array+=("--stats")
 array+=("${source}")
 array+=("${target}")
 
