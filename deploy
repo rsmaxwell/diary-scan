@@ -22,6 +22,11 @@ if [ -z "${SERVER_RUN_USERNAME}" ]; then
     exit 1
 fi
 
+if [ -z "${SERVER_SOURCE_DIRECTORY}" ]; then
+    echo "SERVER_SOURCE_DIRECTORY not specified"
+    exit 1
+fi
+
 if [ -z "${SERVER_TARGET_DIRECTORY}" ]; then
     echo "SERVER_TARGET_DIRECTORY not specified"
     exit 1
