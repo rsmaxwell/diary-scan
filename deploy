@@ -28,7 +28,7 @@ if [ -z "${SERVER_TARGET_DIRECTORY}" ]; then
 fi
 
 
-source="./output/html/"
+source="${SERVER_SOURCE_DIRECTORY}"
 target="${SERVER_SSH_USERNAME}@${SERVER_SSH_HOST}:${SERVER_TARGET_DIRECTORY}"
 
 array=()
@@ -39,6 +39,7 @@ array+=("--verbose")
 array+=("--compress")
 array+=("--human-readable")
 array+=("--delete")
+array+=("--exclude=pages")
 array+=("${source}")
 array+=("${target}")
 
