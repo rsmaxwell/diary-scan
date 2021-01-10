@@ -171,3 +171,13 @@ cat << EOF > output/html/index.html
 </html>
 
 EOF
+
+#-------------------------------------------
+# Generate the version file
+#-------------------------------------------
+jq -n --arg id "${BUILD_ID}" \
+      --arg date "${BUILD_DATE}" \
+    '{id: $id, date: $date}' > ./output/html/version.json
+
+
+

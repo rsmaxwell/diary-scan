@@ -1,5 +1,11 @@
 #!/bin/bash
 
+configfile="${HOME}/diary.json"
+if [ ! -f "${configfile}" ]; then
+    echo "configfile not found: ${configfile}"
+    exit 1
+fi
+
 . ~/web-server-info
 
 if [ -z "${SERVER_SSH_USERNAME}" ]; then
@@ -62,7 +68,7 @@ OFS=${IFS}
 IFS=${delimiter}
 set -x
 rsync ${options}
-set +x
+
 result=$?
 IFS=${OFS}
 
@@ -71,3 +77,5 @@ if [ ! ${result} == 0 ]; then
     echo "result = ${result}"
     exit 1
 fi
+set +x
+
