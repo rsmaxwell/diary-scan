@@ -175,6 +175,7 @@ EOF
 #-------------------------------------------
 # Generate the version file
 #-------------------------------------------
+echo "Generate the version file: ${BUILD_ID}, ${BUILD_DATE}
 jq -n --arg id "${BUILD_ID}" \
       --arg date "${BUILD_DATE}" \
     '{id: $id, date: $date}' > ./output/html/version.json
