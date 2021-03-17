@@ -12,7 +12,8 @@
 # Display the diary directory:
 #     diary
 #
-# Extract text from a word doc and generate a set of fragment directories under './output/fragments':
+# Extract text from a word doc and generate a set of fragment directories under './output/fragments'
+# which are then copied to './input' (which is input to the 'diary-scan' process):
 #     ./extractor img2718-right.docx
 #
 
