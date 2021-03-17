@@ -1,5 +1,21 @@
 #!/bin/bash
 
+#
+# Extract text from word doc and place in fragment directories
+#
+# The 'diary' utility is used to save repeating arguments which do not change very much.
+# The diary data is persisted in the file '~/diary.json'
+#
+# Change the diary diectory:
+#     setdiary diary-1834
+#
+# Display the diary directory:
+#     diary
+#
+# Extract text from a word doc and generate a set of fragment directories under './output/fragments':
+#     ./extractor img2718-right.docx
+#
+
 word=${1}
 if [ -z "${word}" ]; then
     echo "Error: $0[${LINENO}]"
@@ -69,7 +85,7 @@ REPOSITORY="releases"
 GROUPID="com.rsmaxwell.diary"
 
 ARTIFACTID="extractor"
-VERSION="0.0.116"
+VERSION="0.0.117"
 
 # get the extractor jar
 stdout=$(./getJar2 "${REPOSITORYURL}" "${REPOSITORYID}" "${REPOSITORY}" "${GROUPID}" "${ARTIFACTID}" "${VERSION}" )
@@ -111,7 +127,7 @@ else
 fi
 
 # get the ApacheCommonsText Jar
-stdout=$(./getJar "org.apache.commons" "commons-text" "1.8" )
+stdout=$(./getJar "org.apache.commons" "commons-text" "1.9" )
 result=$?
 if [ ${result} -eq 0 ]; then
     apacheCommonsTextJar=${stdout}
@@ -123,7 +139,7 @@ else
 fi
 
 # get the ApacheCommonsLang3 Jar
-stdout=$(./getJar "org.apache.commons" "commons-lang3" "3.9" )
+stdout=$(./getJar "org.apache.commons" "commons-lang3" "3.12.0" )
 result=$?
 if [ ${result} -eq 0 ]; then
     apacheCommonsLang3Jar=${stdout}
@@ -135,7 +151,7 @@ else
 fi
 
 # get the JacksonDatabind Jar
-stdout=$(./getJar "com.fasterxml.jackson.core" "jackson-databind" "2.10.2")
+stdout=$(./getJar "com.fasterxml.jackson.core" "jackson-databind" "2.12.2")
 result=$?
 if [ ${result} -eq 0 ]; then
     jacksonDataBindJar=${stdout}
@@ -147,7 +163,7 @@ else
 fi
 
 # get the JacksonCore Jar
-stdout=$(./getJar "com.fasterxml.jackson.core" "jackson-core" "2.10.2")
+stdout=$(./getJar "com.fasterxml.jackson.core" "jackson-core" "2.12.2")
 result=$?
 if [ ${result} -eq 0 ]; then
     jacksonCoreJar=${stdout}
@@ -159,7 +175,7 @@ else
 fi
 
 # get the JacksonAnnotations Jar
-stdout=$(./getJar "com.fasterxml.jackson.core" "jackson-annotations" "2.10.2" )
+stdout=$(./getJar "com.fasterxml.jackson.core" "jackson-annotations" "2.12.2" )
 result=$?
 if [ ${result} -eq 0 ]; then
     jacksonAnnotationsJar=${stdout}

@@ -11,7 +11,7 @@ REPOSITORYID="releases"
 REPOSITORY="releases"
 GROUPID="com.rsmaxwell.diary"
 ARTIFACTID="wordconverter"
-VERSION="0.0.27"
+VERSION="0.0.29"
 
 # get the wordconverter jar
 stdout=$(./getJar2 "${REPOSITORYURL}" "${REPOSITORYID}" "${REPOSITORY}" "${GROUPID}" "${ARTIFACTID}" "${VERSION}")
@@ -38,7 +38,7 @@ else
 fi
 
 # get the ApacheCommonsText Jar
-stdout=$(./getJar "org.apache.commons" "commons-text" "1.8")
+stdout=$(./getJar "org.apache.commons" "commons-text" "1.9")
 result=$?
 if [ ${result} -eq 0 ]; then
     apacheCommonsTextJar=${stdout}
@@ -50,7 +50,7 @@ else
 fi
 
 # get the ApacheCommonsLang3 Jar
-stdout=$(./getJar "org.apache.commons" "commons-lang3" "3.9")
+stdout=$(./getJar "org.apache.commons" "commons-lang3" "3.12.0")
 result=$?
 if [ ${result} -eq 0 ]; then
     apacheCommonsLang3Jar=${stdout}
@@ -62,7 +62,7 @@ else
 fi
 
 # get the JacksonDatabind Jar
-stdout=$(./getJar "com.fasterxml.jackson.core" "jackson-databind" "2.10.2")
+stdout=$(./getJar "com.fasterxml.jackson.core" "jackson-databind" "2.12.2")
 result=$?
 if [ ${result} -eq 0 ]; then
     jacksonDataBindJar=${stdout}
@@ -74,7 +74,7 @@ else
 fi
 
 # get the JacksonCore Jar
-stdout=$(./getJar "com.fasterxml.jackson.core" "jackson-core" "2.10.2")
+stdout=$(./getJar "com.fasterxml.jackson.core" "jackson-core" "2.12.2")
 result=$?
 if [ ${result} -eq 0 ]; then
     jacksonCoreJar=${stdout}
@@ -86,7 +86,7 @@ else
 fi
 
 # get the JacksonAnnotations Jar
-stdout=$(./getJar "com.fasterxml.jackson.core" "jackson-annotations" "2.10.2" )
+stdout=$(./getJar "com.fasterxml.jackson.core" "jackson-annotations" "2.12.2" )
 result=$?
 if [ ${result} -eq 0 ]; then
     jacksonAnnotationsJar=${stdout}
