@@ -84,20 +84,33 @@ The template classname identifies a class implementing the
 "com.rsmaxwell.diaryjson.template" interface
 
 ----
-## scripts
+## Edit a fragment
 
-### extract
+Open a cygwin window and make this project the current directory
 
-### build
+```
+cd /cygdrive/c/Users/Richard/git/github.com/rsmaxwell/diary-scan
+```
 
-### buildFragmant
+Make the Fragment standalone by building a wrapper around it called "document.html"
+
+```
+./buildFragment 1835/01/05-img2648-right
+```
+
+Open "document.html" in Word, edit then "Save as" a .docx
+Extract the Fragment from "document.docx" 
+
+```
+./wordConverter 1835/01/05-img2648-right
+```
+
+Clean the Fragment directory leaving just the "fragment.html" and "fragment.json"
+
+```
+./cleanFragment 1835/01/05-img2648-right
+```
 
 
 
-----
-## changelog
-* 17-Feb-2013 re-design
 
-----
-## thanks
-* [markdown-js](https://github.com/evilstreak/markdown-js)
