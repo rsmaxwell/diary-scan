@@ -84,6 +84,40 @@ The template classname identifies a class implementing the
 "com.rsmaxwell.diaryjson.template" interface
 
 ----
+## Convert a Word page into a set of Fragments
+
+Open a cygwin window and make this project the current directory
+
+```
+cd /cygdrive/c/Users/Richard/git/github.com/rsmaxwell/diary-scan
+```
+
+Set the name of the diary
+
+```
+setDiary diary-1835
+```
+
+Convert the Word page document into fragments
+
+```
+./extractor img2648-right.docx
+```
+
+This will point the input to read ${root}/${path}/${dairy}/img2648-right.docx
+i.e.
+
+```
+/cygdrive/z/nancy-and-ronald-maxwell/documents/sea-captains-chest/diary-1835/metadata/word/img2648-right.docx
+```
+
+And output fragments to the directory
+
+```
+/cygdrive/z/Users/Richard/git/github.com/rsmaxwell/diary-scan/input/fragments/1835
+```
+
+----
 ## Edit a fragment
 
 Open a cygwin window and make this project the current directory
