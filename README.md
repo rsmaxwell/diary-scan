@@ -92,7 +92,7 @@ Open a cygwin window and make this project the current directory
 cd /cygdrive/c/Users/Richard/git/github.com/rsmaxwell/diary-scan
 ```
 
-Set the name of the diary.
+Set the name of the diary
 
 ```
 setDiary diary-1835
